@@ -67,7 +67,7 @@ std::string ApplicationState::to_string() const {
          "Mode: " +
          std::string(mode_to_string(_mode)) +
          "\nSelected sample id: " + std::to_string(_selected_sample_id) + "\n" +
-         std::to_string(_samples.size()) + " Samples:" + samples_str;
+         std::to_string(_samples.size()) + " Samples:\n" + samples_str;
 }
 
 std::ostream &operator<<(std::ostream &os, ApplicationState s) {

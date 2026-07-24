@@ -187,6 +187,7 @@ bool handle_input(std::string input, ApplicationState &state) {
 
   if (tokens.size() == 0) {
     std::cout << "No input" << std::endl;
+    std::cout << std::endl << state << std::endl << std::endl;
     return true;
   }
 

@@ -2,6 +2,7 @@
 #include <juce_audio_formats/juce_audio_formats.h>
 
 #include "AudioDeps.h"
+#include "juce_audio_basics/juce_audio_basics.h"
 
 Sample::Sample(size_t id, AudioDeps &deps) : _id(id), _deps(deps) {}
 
@@ -18,11 +19,24 @@ bool Sample::load_file(std::string path) {
     return false;
   }
 
+  _buffer.setSize(static_cast<int>(reader->numChannels),
+                  static_cast<int>(reader->lengthInSamples));
+
+  if (!reader->read(&_buffer, 0, _buffer.getNumSamples(), 0, true, true)) {
+    return false;
+  }
+
+  _sample_rate = reader->sampleRate;
+  _length_in_samples = reader->lengthInSamples;
+  _file_path = path;
+
   return true;
 }
 
 std::string Sample::to_string() const {
-  return "Sample\nid: " + std::to_string(_id) + "\nfile path: " + _file_path;
+  return "Sample\nid: " + std::to_string(_id) + "\nfile path: " + _file_path +
+         "\nsample rate: " + std::to_string(_sample_rate) +
+         "\nlength in samples: " + std::to_string(_length_in_samples);
 }
 
 std::ostream &operator<<(std::ostream &os, Sample s) {

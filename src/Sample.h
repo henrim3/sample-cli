@@ -1,4 +1,4 @@
-#include "juce_core/juce_core.h"
+#include "juce_audio_basics/juce_audio_basics.h"
 #include <juce_audio_formats/juce_audio_formats.h>
 
 #include "AudioDeps.h"
@@ -21,5 +21,7 @@ private:
   size_t _id;
   AudioDeps &_deps;
   std::string _file_path;
-  juce::File _file;
+  juce::AudioBuffer<float> _buffer;
+  double _sample_rate = 0.0;
+  int64_t _length_in_samples = 0;
 };
