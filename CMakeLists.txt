@@ -23,6 +23,8 @@ target_sources(${PROJECT_NAME}
     PRIVATE
         src/Main.cpp
         src/ApplicationState.cpp
+        src/AudioDeps.cpp
+        src/Sample.cpp
 )
 
 target_compile_definitions(${PROJECT_NAME}
