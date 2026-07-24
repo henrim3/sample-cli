@@ -32,7 +32,7 @@ Tokens split_str(const std::string &s, char c) {
 
 void print_str_vector(const Tokens &v) {
   std::cout << "String Vector of size " << v.size() << std::endl;
-  for (std::string s : v) {
+  for (const std::string& s : v) {
     std::cout << s << std::endl;
   }
 }
@@ -118,14 +118,26 @@ void handle_deselect(const Tokens &tokens, ApplicationState &state) {
 }
 
 void handle_new_sample(const Tokens &tokens, ApplicationState &state) {
-  if (!expect_num_tokens(tokens, 2)) {
-    std::cout << "select sample expects up to 1 argument" << std::endl;
+  if (tokens.size() > 3) {
+    std::cout << "new sample expects up to 1 argument" << std::endl;
     return;
   }
 
   Sample *sample = state.create_sample();
 
   std::cout << "Created sample " << sample->get_id() << std::endl;
+
+  // load file into created sample
+  if (tokens.size() == 3) {
+    std::string path = tokens[2];
+
+    if (!sample->load_file(path)) {
+      print_error("Couldn't load file");
+    }
+
+    std::cout << "Loaded file " << path << " into sample " << sample->get_id()
+              << std::endl;
+  }
 }
 
 void handle_new_command(const Tokens &tokens, ApplicationState &state) {
@@ -143,13 +155,12 @@ void handle_new_command(const Tokens &tokens, ApplicationState &state) {
 
 void handle_load_sample(const Tokens &tokens, ApplicationState &state) {
   if (!expect_num_tokens(tokens, 2)) {
-    std::cout << "File name must be provided" << std::endl;
+    std::cout << "File path must be provided" << std::endl;
     return;
   }
 
-  std::string_view file_name = tokens[1];
+  std::string_view path = tokens[1];
 
-  std::cout << "Loading file " << file_name << std::endl;
   Sample *sample = state.get_current_sample();
 
   if (sample == nullptr) {
@@ -161,6 +172,9 @@ void handle_load_sample(const Tokens &tokens, ApplicationState &state) {
     print_error("Couldn't load file");
     return;
   }
+
+  std::cout << "Loaded file " << path << " into sample "
+            << state.get_selected_sample_id() << std::endl;
 }
 
 void handle_sample_command(const Tokens &tokens, ApplicationState &state) {

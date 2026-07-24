@@ -1,7 +1,9 @@
+#pragma once
+
 #include "juce_audio_basics/juce_audio_basics.h"
 #include <juce_audio_formats/juce_audio_formats.h>
 
-#include "AudioDeps.h"
+class AudioDeps;
 
 class Sample {
 public:
@@ -11,7 +13,9 @@ public:
 
   std::string get_file_path() const;
 
-  bool load_file(std::string path);
+  const juce::AudioBuffer<float> &get_buffer() const;
+
+  bool load_file(const std::string &path);
 
   std::string to_string() const;
 

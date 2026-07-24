@@ -1,0 +1,17 @@
+#pragma once
+
+#include "Sample.h"
+
+// Owns configuration that the user interacts with.
+//
+// Ex: sample, gain, pan, pitch, looping
+class Pad {
+public:
+  void set_sample(const Sample *sample);
+  void trigger() const;
+  
+private:
+  const Sample *_sample;
+  float gain = 1.0f;
+  bool loop = false;
+};

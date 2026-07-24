@@ -25,6 +25,7 @@ target_sources(${PROJECT_NAME}
         src/ApplicationState.cpp
         src/AudioDeps.cpp
         src/Sample.cpp
+        src/SamplePlayer.cpp
 )
 
 target_compile_definitions(${PROJECT_NAME}
