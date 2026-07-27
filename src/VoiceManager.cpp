@@ -3,7 +3,7 @@
 #include "Sample.h"
 #include "Voice.h"
 
-void VoiceManager::create_voice(size_t pad_id, const Sample &sample) {
+void VoiceManager::create_voice(std::size_t pad_id, const Sample &sample) {
   for (Voice &voice : _voices) {
     if (!voice.is_active()) {
       voice.start(pad_id, sample);
@@ -14,7 +14,7 @@ void VoiceManager::create_voice(size_t pad_id, const Sample &sample) {
   std::cout << "Ran out of voices!" << std::endl;
 }
 
-void VoiceManager::stop_voices_for_pad(size_t pad_id) {
+void VoiceManager::stop_voices_for_pad(std::size_t pad_id) {
   for (Voice &voice : _voices) {
     if (voice.is_active() && voice.get_pad_id() == pad_id) {
       voice.stop();

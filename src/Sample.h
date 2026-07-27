@@ -3,27 +3,26 @@
 #include "juce_audio_basics/juce_audio_basics.h"
 #include <juce_audio_formats/juce_audio_formats.h>
 
-class AudioDeps;
+class FormatManager;
 
 class Sample {
 public:
-  Sample(size_t id, AudioDeps &deps);
+  Sample(std::size_t id);
 
-  size_t get_id() const;
+  std::size_t get_id() const;
 
   std::string get_file_path() const;
 
   const juce::AudioBuffer<float> &get_buffer() const;
-
-  bool load_file(const std::string &path);
 
   std::string to_string() const;
 
   friend std::ostream &operator<<(std::ostream &os, Sample s);
 
 private:
-  size_t _id;
-  AudioDeps &_deps;
+  friend class SampleManager;
+
+  std::size_t _id;
   std::string _file_path;
   juce::AudioBuffer<float> _buffer;
   double _sample_rate = 0.0;

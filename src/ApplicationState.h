@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "AudioDeps.h"
+#include "FormatManager.h"
 #include "Sample.h"
 
 enum class ApplicationMode {
@@ -14,20 +14,16 @@ enum class ApplicationMode {
 
 class ApplicationState {
 public:
-  ApplicationState(AudioDeps &audio_deps);
+  ApplicationState(FormatManager &format_manager);
 
   void set_mode(ApplicationMode mode);
   ApplicationMode get_mode() const;
 
-  bool select_sample(size_t id);
+  bool select_sample(std::size_t id);
   bool select_last_sample();
-  size_t get_selected_sample_id() const;
+  std::size_t get_selected_sample_id() const;
 
   void deselect_sample();
-
-  Sample *create_sample();
-  Sample *get_sample(size_t id);
-  Sample *get_current_sample();
 
   std::string to_string() const;
 
@@ -35,11 +31,11 @@ public:
 
 private:
   ApplicationMode _mode;
-  bool _did_select_sample;
-  size_t _selected_sample_id;
+  bool _is_sample_selected;
+  std::size_t _selected_sample_id;
   std::vector<Sample> _samples;
 
-  AudioDeps &_audio_deps;
+  FormatManager &_format_manager;
 
   static std::string_view mode_to_string(ApplicationMode mode);
 };

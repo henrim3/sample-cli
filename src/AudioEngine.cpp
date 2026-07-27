@@ -19,3 +19,14 @@ void AudioEngine::audioDeviceIOCallbackWithContext(
                                          num_output_channels, num_samples);
   _voice_manager.render(output_buffer);
 }
+
+void AudioEngine::audioDeviceAboutToStart(juce::AudioIODevice* device) {
+  _sample_rate = device->getCurrentSampleRate();
+  _block_size = device->getCurrentBufferSizeSamples();
+}
+
+// called when audio device stopped, reset things
+void AudioEngine::audioDeviceStopped() {
+  _sample_rate = 0.0;
+  _block_size = 0;
+}

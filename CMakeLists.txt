@@ -19,14 +19,11 @@ FetchContent_MakeAvailable(JUCE)
 
 add_executable(${PROJECT_NAME})
 
-target_sources(${PROJECT_NAME}
-    PRIVATE
-        src/Main.cpp
-        src/ApplicationState.cpp
-        src/AudioDeps.cpp
-        src/Sample.cpp
-        src/SamplePlayer.cpp
+file(GLOB_RECURSE SOURCES
+    src/*.cpp
 )
+
+target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})
 
 target_compile_definitions(${PROJECT_NAME}
     PUBLIC

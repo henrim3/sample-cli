@@ -2,9 +2,9 @@
 
 #include "Sample.h"
 
-size_t Voice::get_pad_id() const { return _pad_id; }
+std::size_t Voice::get_pad_id() const { return _pad_id; }
 
-void Voice::start(size_t pad_id, const Sample &sample) {
+void Voice::start(std::size_t pad_id, const Sample &sample) {
   _pad_id = pad_id;
   _sample = &sample;
   _position = 0;

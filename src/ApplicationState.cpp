@@ -3,20 +3,20 @@
 #include <iostream>
 #include <string>
 
-ApplicationState::ApplicationState(AudioDeps &audio_deps)
-    : _mode(ApplicationMode::Main), _did_select_sample(false),
-      _selected_sample_id(0), _audio_deps(audio_deps) {}
+ApplicationState::ApplicationState(FormatManager &format_manager)
+    : _mode(ApplicationMode::Main), _is_sample_selected(false),
+      _selected_sample_id(0), _format_manager(format_manager) {}
 
 void ApplicationState::set_mode(ApplicationMode mode) { _mode = mode; }
 
 ApplicationMode ApplicationState::get_mode() const { return _mode; }
 
-bool ApplicationState::select_sample(size_t id) {
+bool ApplicationState::select_sample(std::size_t id) {
   if (id >= _samples.size()) {
     return false;
   }
 
-  _did_select_sample = true;
+  _is_sample_selected = true;
   _mode = ApplicationMode::Sample;
   _selected_sample_id = id;
 
@@ -24,36 +24,23 @@ bool ApplicationState::select_sample(size_t id) {
 }
 
 bool ApplicationState::select_last_sample() {
-  if (!_did_select_sample) {
+  if (!_is_sample_selected) {
     return false;
   }
 
-  _did_select_sample = true;
+  _is_sample_selected = true;
   _mode = ApplicationMode::Sample;
 
   return true;
 }
 
-size_t ApplicationState::get_selected_sample_id() const {
+std::size_t ApplicationState::get_selected_sample_id() const {
   return _selected_sample_id;
 }
 
-void ApplicationState::deselect_sample() { _mode = ApplicationMode::Main; }
-
-Sample *ApplicationState::create_sample() {
-  _samples.push_back(Sample(_samples.size(), _audio_deps));
-  return &_samples.back();
-}
-
-Sample *ApplicationState::get_sample(size_t id) {
-  if (id >= _samples.size()) {
-    return nullptr;
-  }
-  return &_samples[id];
-}
-
-Sample *ApplicationState::get_current_sample() {
-  return get_sample(_selected_sample_id);
+void ApplicationState::deselect_sample() {
+  _is_sample_selected = false;
+  _mode = ApplicationMode::Main;
 }
 
 std::string ApplicationState::to_string() const {
