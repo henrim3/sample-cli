@@ -12,6 +12,8 @@
 
 class Application {
 public:
+  Application();
+
   SampleManager &get_sample_manager();
   ApplicationState &get_state();
 
@@ -25,7 +27,7 @@ private:
   DeviceManager _device_manager{_audio_engine};
   FormatManager _format_manager;
   SampleManager _sample_manager{_format_manager};
-  PadManager _pad_manager;
+  PadManager _pad_manager{};
 
   ApplicationState _state;
 };

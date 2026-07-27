@@ -2,6 +2,8 @@
 #include "Sample.h"
 #include "SampleManager.h"
 
+Application::Application() {}
+
 SampleManager &Application::get_sample_manager() { return _sample_manager; }
 
 ApplicationState &Application::get_state() { return _state; }

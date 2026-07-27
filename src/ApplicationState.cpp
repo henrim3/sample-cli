@@ -3,9 +3,9 @@
 #include <iostream>
 #include <string>
 
-ApplicationState::ApplicationState(FormatManager &format_manager)
+ApplicationState::ApplicationState()
     : _mode(ApplicationMode::Main), _is_sample_selected(false),
-      _selected_sample_id(0), _format_manager(format_manager) {}
+      _selected_sample_id(0) {}
 
 void ApplicationState::set_mode(ApplicationMode mode) { _mode = mode; }
 

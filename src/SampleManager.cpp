@@ -1,6 +1,10 @@
 #include "SampleManager.h"
+#include "FormatManager.h"
 #include "Sample.h"
 #include <stdexcept>
+
+SampleManager::SampleManager(FormatManager &format_manager)
+    : _format_manager(format_manager) {}
 
 Sample *SampleManager::load_sample(const std::string &path) {
   std::size_t id = _next_id++;
