@@ -1,9 +1,13 @@
 #pragma once
 
 #include <string>
+#include <variant>
 #include <vector>
 
-enum class CommandType {};
+enum class CommandType {
+  SELECT,
+  SELECT_PAD,
+};
 
 enum class CommandArgType {
   STR,
@@ -11,15 +15,12 @@ enum class CommandArgType {
   INT,
 };
 
-union CommandArg {
-  std::string str;
-  std::size_t size_t_;
-  int int_;
-};
+using CommandArgValue = std::variant<std::string, std::size_t, int>;
 
 struct Command {
-  std::string token;
   CommandType type;
-  std::vector<CommandArgType> arg_types;
-  std::vector<Command> subcommands;
+  std::string token;
+  std::vector<CommandArgType> arg_types = {};
+  std::vector<Command> subcommands = {};
+  bool is_phony = false;
 };
