@@ -3,6 +3,7 @@
 
 #include "Application.h"
 #include "CommandLoop.h"
+#include "Commands.h"
 
 std::vector<std::string> split_str(const std::string &s, char c) {
   std::vector<std::string> v = {};
@@ -27,6 +28,9 @@ std::vector<std::string> split_str(const std::string &s, char c) {
 }
 
 int main() {
+  Commands c;
+  c.register_command(Command());
+
   Application app;
   CommandLoop command_loop(app);
 
