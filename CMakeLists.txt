@@ -7,6 +7,11 @@ project(sample-cli VERSION 0.0.1)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+find_program(IWYU_BIN include-what-you-use)
+if (IWYU_BIN)
+  set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE "${IWYU_BIN}")
+endif()
+
 include(FetchContent)
 
 FetchContent_Declare(

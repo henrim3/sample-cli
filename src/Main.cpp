@@ -1,36 +1,13 @@
-#include <string>
-#include <vector>
-
 #include "Application.h"
 #include "Command.h"
 #include "CommandLoop.h"
-#include "CommandsRepository.h"
-
-std::vector<std::string> split_str( const std::string & s, char c ) {
-  std::vector<std::string> v = {};
-  std::string curr_str = "";
-  for (std::size_t i = 0; i < s.size(); i++) {
-    char curr_char = s[i];
-    if (curr_char == c) {
-      if (curr_str.size() != 0) {
-        v.push_back( curr_str );
-        curr_str = "";
-      }
-    } else {
-      curr_str.push_back( curr_char );
-    }
-  }
-
-  if (curr_str.size() != 0) {
-    v.push_back( curr_str );
-  }
-
-  return v;
-}
+#include "CommandRegistry.h"
+#include "Input.h"
+#include "Parser.h"
 
 int main() {
-  CommandsRepository commands;
-  commands.register_command( {
+  CommandRegistry command_registry;
+  command_registry.register_command( {
     .type = CommandType::SELECT,
     .token = "select",
     .subcommands =
@@ -47,7 +24,9 @@ int main() {
   } );
 
   Application app;
-  CommandLoop command_loop( app );
+  Input input;
+  Parser parser( command_registry );
+  CommandLoop command_loop( app, input, parser );
 
   command_loop.run();
 

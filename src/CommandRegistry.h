@@ -3,7 +3,7 @@
 #include "Command.h"
 #include <vector>
 
-class CommandsRepository {
+class CommandRegistry {
 public:
   void register_command(const Command &command);
   const std::vector<Command> &get_commands() const;
