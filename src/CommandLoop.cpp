@@ -3,7 +3,6 @@
 #include "Application.h"
 #include "Command.h"
 #include "Output.h"
-#include <optional>
 
 CommandLoop::CommandLoop( Application & app, const Input & input,
                           const Parser & parser )
@@ -18,7 +17,7 @@ void CommandLoop::run() {
       return;
     }
 
-    std::optional<Action> maybe_action = _parser.parse_action( line );
+    MaybeAction maybe_action = _parser.parse_action( line );
 
     if ( !maybe_action.has_value() ) {
       Output::println( "No action" );
