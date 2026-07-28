@@ -7,13 +7,14 @@
 
 void _register_commands( CommandRegistry & command_registry ) {
   command_registry.register_command( {
-    .type = CommandType::SELECT,
     .token = "select",
+    .type = CommandType::SELECT,
+    .is_phony = true,
     .subcommands =
       {
         {
-          .type = CommandType::SELECT_PAD,
           .token = "pad",
+          .type = CommandType::SELECT_PAD,
           .arg_types =
             {
               CommandArgType::SIZE_T,

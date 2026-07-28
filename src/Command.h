@@ -33,9 +33,9 @@ private:
 };
 
 struct Command {
-  CommandType type;
   std::string token;
+  CommandType type;
+  bool is_phony = false;
   std::vector<CommandArgType> arg_types = {};
   Commands subcommands = {};
-  bool is_phony = false;
 };
