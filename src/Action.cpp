@@ -1,11 +1,20 @@
 #include "Action.h"
 
 Action::Action( const InitializeActionArgs & args )
-    : _command( args.command ), _arg_values( args.arg_values ) {}
+    : _command_type( args.command_type ), _args( args.args ) {}
 
-const Command & Action::get_command() const {
-  return _command;
+CommandType Action::get_command_type() const {
+  return _command_type;
 }
-const CommandArgValue & Action::get_arg_value( std::size_t i ) const {
-  return _arg_values[i];
+
+const CommandArgs & Action::get_args() const {
+  return _args;
+}
+
+const CommandArg & Action::get_arg( std::size_t i ) const {
+  return _args.at( i );
+}
+
+std::size_t Action::num_args() const {
+  return _args.size();
 }

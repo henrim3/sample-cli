@@ -26,11 +26,10 @@ private:
   std::pair<const Command *, std::size_t>
   find_matching_command( const Tokens & tokens ) const;
 
-  MaybeCommandArgValue validate_arg( std::string_view token,
-                                     CommandArgType expected_type ) const;
+  MaybeCommandArg validate_arg( std::string_view token,
+                                CommandArgType expected_type ) const;
 
-  MaybeCommandArgValues
-  validate_args( const std::vector<CommandArgType> & arg_types,
-                 Tokens::const_iterator begin,
-                 Tokens::const_iterator end ) const;
+  MaybeCommandArgs parse_args( const std::vector<CommandArgType> & arg_types,
+                               Tokens::const_iterator begin,
+                               Tokens::const_iterator end ) const;
 };

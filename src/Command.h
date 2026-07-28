@@ -1,31 +1,61 @@
 #pragma once
 
+#include <array>
 #include <initializer_list>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <variant>
 #include <vector>
 
 using CommandArgValue = std::variant<std::string, std::size_t, int>;
-using MaybeCommandArgValue = std::optional<CommandArgValue>;
-using CommandArgValues = std::vector<CommandArgValue>;
-using MaybeCommandArgValues = std::optional<CommandArgValues>;
 
 enum class CommandType {
   NEW,
   NEW_SAMPLE,
   SELECT,
   SELECT_PAD,
+  COUNT
 };
+
+constexpr std::array<std::string, static_cast<size_t>( CommandType::COUNT )>
+  CommandTypeNames{ "NEW", "NEW_SAMPLE", "SELECT", "SELECT_PAD" };
 
 enum class CommandArgType {
   STR,
   SIZE_T,
   INT,
+  COUNT,
 };
 
+constexpr std::array<std::string, static_cast<size_t>( CommandArgType::COUNT )>
+  CommandArgTypeNames{ "STR", "SIZE_T", "INT" };
+
 using CommandArgTypes = std::vector<CommandArgType>;
+
+struct InitializeCommandArgArgs {
+  CommandArgType type;
+  CommandArgValue value;
+};
+
+class CommandArg {
+public:
+  CommandArg( const InitializeCommandArgArgs & args );
+
+  CommandArgType get_type() const;
+  CommandArgValue get_value() const;
+
+  std::string to_string() const;
+
+private:
+  CommandArgType _type;
+  CommandArgValue _value;
+};
+
+using MaybeCommandArg = std::optional<CommandArg>;
+using CommandArgs = std::vector<CommandArg>;
+using MaybeCommandArgs = std::optional<CommandArgs>;
 
 struct Command;
 

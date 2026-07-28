@@ -1,23 +1,24 @@
 #pragma once
 
 #include "Command.h"
-#include <vector>
 
 struct InitializeActionArgs {
-  const Command & command;
-  const std::vector<CommandArgValue> & arg_values;
+  CommandType command_type;
+  const CommandArgs & args;
 };
 
 class Action {
 public:
   Action( const InitializeActionArgs & args );
 
-  const Command & get_command() const;
-  const CommandArgValue & get_arg_value( std::size_t i ) const;
+  CommandType get_command_type() const;
+  const CommandArgs & get_args() const;
+  const CommandArg & get_arg( std::size_t i ) const;
+  std::size_t num_args() const;
 
 private:
-  const Command & _command;
-  std::vector<CommandArgValue> _arg_values;
+  const CommandType _command_type;
+  CommandArgs _args;
 };
 
 using MaybeAction = std::optional<Action>;

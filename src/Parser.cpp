@@ -2,11 +2,9 @@
 #include "Command.h"
 #include "Output.h"
 #include "StringConverter.h"
-#include "StringValidation.h"
 
 #include <cassert>
 #include <cstdlib>
-#include <optional>
 #include <stdexcept>
 
 Parser::Parser( const CommandRegistry & command_registry )
@@ -29,14 +27,18 @@ MaybeAction Parser::parse_action( std::string_view line ) const {
   }
 
   if ( tokens.size() == depth ) {
-    return Action( { .command = *command, .arg_values = {} } );
+    return Action( { .command_type = command->type, .args = {} } );
   }
 
-  MaybeCommandArgValues maybe_arg_values = validate_args(
+  MaybeCommandArgs maybe_args = parse_args(
     command->arg_types, tokens.cbegin() + (int)depth, tokens.cend() );
 
+  if ( !maybe_args.has_value() ) {
+    return std::nullopt;
+  }
+
   return Action(
-    { .command = *command, .arg_values = maybe_arg_values.value_or( {} ) } );
+    { .command_type = command->type, .args = maybe_args.value() } );
 }
 
 MaybeTokens Parser::tokenize( std::string_view s ) const {
@@ -121,37 +123,72 @@ Parser::find_matching_command( const Tokens & tokens ) const {
   return { found, depth };
 }
 
-MaybeCommandArgValue
-Parser::validate_arg( std::string_view token,
-                      CommandArgType expected_type ) const {
+MaybeCommandArg Parser::validate_arg( std::string_view token,
+                                      CommandArgType expected_type ) const {
   switch ( expected_type ) {
-    case CommandArgType::INT:
-      return StringConverter::try_parse_int( token );
-    case CommandArgType::SIZE_T:
-      return StringConverter::try_parse_size_t( token );
-    case CommandArgType::STR:
-      return std::string( token );
+    case CommandArgType::INT: {
+      MaybeInt i = StringConverter::try_parse_int( token );
+
+      if ( !i.has_value() ) {
+        return std::nullopt;
+      }
+
+      return CommandArg( { .type = CommandArgType::INT, .value = i.value() } );
+    }
+
+    case CommandArgType::SIZE_T: {
+      MaybeSizeT n = StringConverter::try_parse_size_t( token );
+
+      if ( !n.has_value() ) {
+        return std::nullopt;
+      }
+
+      return CommandArg(
+        { .type = CommandArgType::SIZE_T, .value = n.value() } );
+    }
+
+    case CommandArgType::STR: {
+      return CommandArg(
+        { .type = CommandArgType::STR, .value = std::string( token ) } );
+    }
+
+    case CommandArgType::COUNT: {
+      throw std::logic_error( "Invalid CommandArgType" );
+    }
   }
+
+  throw std::logic_error( "how" );
 }
 
-MaybeCommandArgValues
-Parser::validate_args( const CommandArgTypes & arg_types,
-                       Tokens::const_iterator begin,
-                       Tokens::const_iterator end ) const {
+MaybeCommandArgs Parser::parse_args( const CommandArgTypes & arg_types,
+                                     Tokens::const_iterator begin,
+                                     Tokens::const_iterator end ) const {
   std::size_t expected_n_args = arg_types.size();
   int n_args = end - begin;
 
   if ( expected_n_args != static_cast<std::size_t>( n_args ) ) {
+    Output::error( "Invalid number of aruguments (" + std::to_string( n_args ) +
+                   ") expected " + std::to_string( expected_n_args ) );
     return std::nullopt;
   }
 
   Tokens::const_iterator it;
   std::size_t i = 0;
 
+  CommandArgs args;
+
   for ( it = begin; it != end; it++ ) {
-    MaybeCommandArgValue maybe_val = validate_arg( *it, arg_types[i] );
+    MaybeCommandArg maybe_arg = validate_arg( *it, arg_types[i] );
+
+    if ( !maybe_arg.has_value() ) {
+      Output::error( "Invalid argument " + std::to_string( i ) );
+      return std::nullopt;
+    }
+
+    args.push_back( maybe_arg.value() );
+
     i++;
   }
 
-  return std::nullopt;
+  return args;
 }
