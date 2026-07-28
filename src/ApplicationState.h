@@ -15,10 +15,10 @@ class ApplicationState {
 public:
   ApplicationState();
 
-  void set_mode(ApplicationMode mode);
+  void set_mode( ApplicationMode mode );
   ApplicationMode get_mode() const;
 
-  bool select_sample(std::size_t id);
+  bool select_sample( std::size_t id );
   bool select_last_sample();
   std::size_t get_selected_sample_id() const;
 
@@ -26,7 +26,7 @@ public:
 
   std::string to_string() const;
 
-  friend std::ostream &operator<<(std::ostream &os, ApplicationState s);
+  friend std::ostream & operator<<( std::ostream & os, ApplicationState s );
 
 private:
   ApplicationMode _mode;
@@ -34,5 +34,5 @@ private:
   std::size_t _selected_sample_id;
   std::vector<Sample> _samples;
 
-  static std::string_view mode_to_string(ApplicationMode mode);
+  static std::string_view mode_to_string( ApplicationMode mode );
 };

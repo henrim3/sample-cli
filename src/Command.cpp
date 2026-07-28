@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 Commands::Commands( std::initializer_list<Command> commands ) {
-  for (const Command & command : commands) {
+  for ( const Command & command : commands ) {
     _commands.insert_or_assign( command.token, command );
   }
 }
@@ -11,7 +11,7 @@ Commands::Commands( std::initializer_list<Command> commands ) {
 const Command * Commands::get( std::string_view token ) const {
   try {
     return &_commands.at( std::string( token ) );
-  } catch (std::out_of_range &) {
+  } catch ( std::out_of_range & ) {
     return nullptr;
   }
 }

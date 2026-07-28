@@ -28,16 +28,16 @@ char Input::get_ch() const {
 
 std::string Input::get_line() const {
   std::string s = "";
-  while (true) {
+  while ( true ) {
     char c = get_ch();
-    if (c == '\n' || c == '\r') {
+    if ( c == '\n' || c == '\r' ) {
       Output::newline();
       return s;
     }
 
     // handle backspace
-    if (c == 127 || c == '\b') {
-      if (!s.empty()) {
+    if ( c == 127 || c == '\b' ) {
+      if ( !s.empty() ) {
         s.pop_back();
 
         // erase character from the screen

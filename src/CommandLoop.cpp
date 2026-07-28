@@ -9,17 +9,17 @@ CommandLoop::CommandLoop( Application & app, const Input & input,
     : _app( app ), _input( input ), _parser( parser ) {}
 
 void CommandLoop::run() {
-  while (true) {
+  while ( true ) {
     Output::prompt( _app.get_state() );
     std::string line = _input.get_line();
 
-    if (line == "quit") {
+    if ( line == "quit" ) {
       return;
     }
 
     std::optional<Action> action = _parser.parse_action( line );
 
-    if (action.has_value()) {
+    if ( action.has_value() ) {
       Output::println( "Action type: " +
                        std::to_string( static_cast<int>(
                          action.value().get_command().type ) ) );

@@ -5,8 +5,8 @@
 #include <unordered_map>
 class PadManager {
 public:
-  Pad &create_pad();
-  Pad *get_pad_by_id(std::size_t id);
+  Pad & create_pad();
+  Pad * get_pad_by_id( std::size_t id );
 
 private:
   std::size_t _next_id = 0;

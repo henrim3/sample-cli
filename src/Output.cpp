@@ -7,7 +7,7 @@ void Output::prompt( const ApplicationState & state ) {
   std::cout << "sample-cli ";
 
   // output selected sample id
-  if (state.get_mode() == ApplicationMode::Sample) {
+  if ( state.get_mode() == ApplicationMode::Sample ) {
     std::cout << "[sample " << state.get_selected_sample_id() << "] ";
   }
 

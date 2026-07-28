@@ -1,10 +1,16 @@
 #pragma once
 
 #include <initializer_list>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <variant>
 #include <vector>
+
+using CommandArgValue = std::variant<std::string, std::size_t, int>;
+using MaybeCommandArgValue = std::optional<CommandArgValue>;
+using CommandArgValues = std::vector<CommandArgValue>;
+using MaybeCommandArgValues = std::optional<CommandArgValues>;
 
 enum class CommandType {
   NEW,
@@ -19,7 +25,7 @@ enum class CommandArgType {
   INT,
 };
 
-using CommandArgValue = std::variant<std::string, std::size_t, int>;
+using CommandArgTypes = std::vector<CommandArgType>;
 
 struct Command;
 

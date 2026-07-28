@@ -6,7 +6,7 @@
 class CommandRegistry {
 public:
   CommandRegistry();
-  CommandRegistry(std::initializer_list<Command> commands);
+  CommandRegistry( std::initializer_list<Command> commands );
 
   void register_command( const Command & command );
   const Commands & get_commands() const;

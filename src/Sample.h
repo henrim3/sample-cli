@@ -7,17 +7,17 @@ class FormatManager;
 
 class Sample {
 public:
-  Sample(std::size_t id);
+  Sample( std::size_t id );
 
   std::size_t get_id() const;
 
   std::string get_file_path() const;
 
-  const juce::AudioBuffer<float> &get_buffer() const;
+  const juce::AudioBuffer<float> & get_buffer() const;
 
   std::string to_string() const;
 
-  friend std::ostream &operator<<(std::ostream &os, Sample s);
+  friend std::ostream & operator<<( std::ostream & os, Sample s );
 
 private:
   friend class SampleManager;

@@ -6,7 +6,7 @@ class AudioEngine;
 
 class FormatManager {
 public:
-  juce::AudioFormatManager &get_format_manager();
+  juce::AudioFormatManager & get_format_manager();
 
 private:
   juce::AudioFormatManager _format_manager;

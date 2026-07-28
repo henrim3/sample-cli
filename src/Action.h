@@ -19,3 +19,5 @@ private:
   const Command & _command;
   std::vector<CommandArgValue> _arg_values;
 };
+
+using MaybeAction = std::optional<Action>;
