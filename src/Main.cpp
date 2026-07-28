@@ -6,22 +6,36 @@
 #include "Parser.h"
 
 int main() {
-  CommandRegistry command_registry{ {
-    .token = "select",
-    .type = CommandType::SELECT,
-    .is_phony = true,
-    .subcommands =
-      {
+  CommandRegistry command_registry{
+    {
+      .token = "new",
+      .type = CommandType::NEW,
+      .is_phony = true,
+      .subcommands =
         {
-          .token = "pad",
-          .type = CommandType::SELECT_PAD,
-          .arg_types =
-            {
-              CommandArgType::SIZE_T,
-            },
+          {
+            .token = "sample",
+            .type = CommandType::NEW_SAMPLE,
+          },
         },
-      },
-  } };
+    },
+    {
+      .token = "select",
+      .type = CommandType::SELECT,
+      .is_phony = true,
+      .subcommands =
+        {
+          {
+            .token = "pad",
+            .type = CommandType::SELECT_PAD,
+            .arg_types =
+              {
+                CommandArgType::SIZE_T,
+              },
+          },
+        },
+    },
+  };
 
   Application app;
   Input input;

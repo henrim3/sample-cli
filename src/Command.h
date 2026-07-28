@@ -7,6 +7,8 @@
 #include <vector>
 
 enum class CommandType {
+  NEW,
+  NEW_SAMPLE,
   SELECT,
   SELECT_PAD,
 };
