@@ -1,4 +1,5 @@
 #include "Input.h"
+#include "Output.h"
 #include <termios.h>
 #include <unistd.h>
 
@@ -21,6 +22,18 @@ Input::~Input() {
 
 char Input::get_ch() const {
   char c;
-  read(STDIN_FILENO, &c, 1);
+  read( STDIN_FILENO, &c, 1 );
   return c;
+}
+
+std::string Input::get_line() const {
+  std::string s = "";
+  while (true) {
+    char c = get_ch();
+    if (c == '\n') {
+      return s;
+    }
+    Output::print( c ); // output for now
+    s += c;
+  }
 }

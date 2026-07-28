@@ -9,9 +9,11 @@ CommandLoop::CommandLoop( Application & app, const Input & input,
 
 void CommandLoop::run() {
   while (true) {
-    char c = _input.get_ch();
-    Output::print( std::to_string( c ) );
-    // Output::prompt( _app.get_state() );
-    // std::vector<Action> actions = _parser.parse_actions();
+    Output::prompt( _app.get_state() );
+    std::string line = _input.get_line();
+    Output::newline();
+    if (line == "quit") {
+      return;
+    }
   }
 }

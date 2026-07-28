@@ -3,7 +3,6 @@
 #include "CommandLoop.h"
 #include "CommandRegistry.h"
 #include "Input.h"
-#include "Output.h"
 #include "Parser.h"
 
 int main() {
@@ -27,7 +26,6 @@ int main() {
   Application app;
   Input input;
   Parser parser( command_registry );
-  Output::init();
   CommandLoop command_loop( app, input, parser );
 
   command_loop.run();
