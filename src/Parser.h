@@ -5,6 +5,8 @@
 #include <optional>
 #include <unordered_set>
 
+using Tokens = std::vector<std::string>;
+
 class Parser {
 public:
   Parser( const CommandRegistry & command_registry );
@@ -14,9 +16,9 @@ public:
 private:
   const CommandRegistry & _command_registry;
 
-  std::vector<std::string> tokenize( std::string_view s ) const;
+  std::optional<Tokens> tokenize( std::string_view s ) const;
 
-  std::vector<std::string>
+  std::optional<Tokens>
   split_str( std::string_view s,
              const std::unordered_set<char> & delimiters ) const;
 

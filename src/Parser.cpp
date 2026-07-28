@@ -1,6 +1,8 @@
 #include "Parser.h"
+#include "Output.h"
 
 #include <cassert>
+#include <cstdlib>
 #include <optional>
 #include <stdexcept>
 
@@ -8,16 +10,20 @@ Parser::Parser( const CommandRegistry & command_registry )
     : _command_registry( command_registry ) {}
 
 std::optional<Action> Parser::parse_action( std::string_view line ) const {
-  std::vector<std::string> tokens = tokenize( line );
+  std::optional<std::vector<std::string>> tokens = tokenize( line );
+
+  if (!tokens) {
+    return {};
+  }
 
   return {};
 }
 
-std::vector<std::string> Parser::tokenize( std::string_view s ) const {
+std::optional<Tokens> Parser::tokenize( std::string_view s ) const {
   return split_str( s, { ' ', '\t' } );
 }
 
-std::vector<std::string>
+std::optional<Tokens>
 Parser::split_str( std::string_view string,
                    const std::unordered_set<char> & delimiters ) const {
   if (delimiters.empty()) {
@@ -57,6 +63,9 @@ Parser::split_str( std::string_view string,
     }
 
     s.push_back( c );
+  }
+
+  if (quote_started) {
   }
 
   if (s.size() != 0) {
