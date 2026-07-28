@@ -40,7 +40,7 @@ std::string Input::get_line() const {
       if (!s.empty()) {
         s.pop_back();
 
-        // Erase character from the screen
+        // erase character from the screen
         Output::print( '\b' );
         Output::print( ' ' );
         Output::print( '\b' );

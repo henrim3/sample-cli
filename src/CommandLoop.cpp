@@ -14,5 +14,7 @@ void CommandLoop::run() {
     if (line == "quit") {
       return;
     }
+
+    _parser.parse_action( line );
   }
 }
