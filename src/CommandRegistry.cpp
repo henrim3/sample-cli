@@ -1,11 +1,10 @@
 #include "CommandRegistry.h"
 
-#include <vector>
 
 void CommandRegistry::register_command( const Command & command ) {
-  _commands.push_back( command );
+  _commands.add( command );
 }
 
-const std::vector<Command> & CommandRegistry::get_commands() const {
+const Commands & CommandRegistry::get_commands() const {
   return _commands;
 }

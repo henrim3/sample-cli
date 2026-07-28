@@ -5,8 +5,7 @@
 #include "Input.h"
 #include "Parser.h"
 
-int main() {
-  CommandRegistry command_registry;
+void _register_commands( CommandRegistry & command_registry ) {
   command_registry.register_command( {
     .type = CommandType::SELECT,
     .token = "select",
@@ -22,6 +21,12 @@ int main() {
         },
       },
   } );
+}
+
+int main() {
+  CommandRegistry command_registry;
+
+  _register_commands( command_registry );
 
   Application app;
   Input input;
