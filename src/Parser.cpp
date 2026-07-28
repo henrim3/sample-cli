@@ -1,31 +1,16 @@
 #include "Parser.h"
 
-#include "Output.h"
 #include <cassert>
+#include <optional>
+#include <stdexcept>
 
 Parser::Parser( const CommandRegistry & command_registry )
     : _command_registry( command_registry ) {}
 
-Action Parser::parse_action( std::string_view line ) const {
+std::optional<Action> Parser::parse_action( std::string_view line ) const {
   std::vector<std::string> tokens = tokenize( line );
 
-  return Action( { .command =
-                     {
-                       .type = CommandType::SELECT,
-                       .token = "select",
-                       .subcommands =
-                         {
-                           {
-                             .type = CommandType::SELECT_PAD,
-                             .token = "pad",
-                             .arg_types =
-                               {
-                                 CommandArgType::SIZE_T,
-                               },
-                           },
-                         },
-                     },
-                   .arg_values = {} } );
+  return {};
 }
 
 std::vector<std::string> Parser::tokenize( std::string_view s ) const {

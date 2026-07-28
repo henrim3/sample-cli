@@ -2,13 +2,14 @@
 
 #include "Action.h"
 #include "CommandRegistry.h"
+#include <optional>
 #include <unordered_set>
 
 class Parser {
 public:
   Parser( const CommandRegistry & command_registry );
 
-  Action parse_action( std::string_view line ) const;
+  std::optional<Action> parse_action( std::string_view line ) const;
 
 private:
   const CommandRegistry & _command_registry;
