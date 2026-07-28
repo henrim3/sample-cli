@@ -13,10 +13,6 @@ void CommandLoop::run() {
     Output::prompt( _app.get_state() );
     std::string line = _input.get_line();
 
-    if ( line == "quit" ) {
-      return;
-    }
-
     MaybeAction maybe_action = _parser.parse_action( line );
 
     if ( !maybe_action.has_value() ) {
@@ -24,6 +20,7 @@ void CommandLoop::run() {
       continue;
     }
 
+    // action has been parsed successfully
     const Action & action = maybe_action.value();
 
     Output::println(
@@ -40,6 +37,11 @@ void CommandLoop::run() {
       }
     } else {
       Output::println( "No args" );
+    }
+
+    if ( action.get_command_type() == CommandType::QUIT ) {
+      Output::println( "Exiting..." );
+      return;
     }
   }
 }

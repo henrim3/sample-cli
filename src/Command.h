@@ -12,6 +12,8 @@
 using CommandArgValue = std::variant<std::string, std::size_t, int>;
 
 enum class CommandType {
+  // MAKE SURE YOU ADD TO THE THING BELOW
+  QUIT,
   NEW,
   NEW_SAMPLE,
   SELECT,
@@ -20,7 +22,7 @@ enum class CommandType {
 };
 
 constexpr std::array<std::string, static_cast<size_t>( CommandType::COUNT )>
-  CommandTypeNames{ "NEW", "NEW_SAMPLE", "SELECT", "SELECT_PAD" };
+  CommandTypeNames{ "QUIT", "NEW", "NEW_SAMPLE", "SELECT", "SELECT_PAD" };
 
 enum class CommandArgType {
   STR,

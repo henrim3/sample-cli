@@ -8,6 +8,14 @@
 int main() {
   CommandRegistry command_registry{
     {
+      .token = "exit",
+      .type = CommandType::QUIT,
+    },
+    {
+      .token = "quit",
+      .type = CommandType::QUIT,
+    },
+    {
       .token = "new",
       .type = CommandType::NEW,
       .is_phony = true,

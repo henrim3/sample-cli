@@ -22,11 +22,11 @@ MaybeAction Parser::parse_action( std::string_view line ) const {
 
   auto [command, depth] = find_matching_command( tokens );
 
-  if ( command == nullptr ) {
+  if ( command == nullptr || command->is_phony ) {
     return std::nullopt;
   }
 
-  if ( tokens.size() == depth ) {
+  if ( tokens.size() == depth && command->arg_types.size() == 0 ) {
     return Action( { .command_type = command->type, .args = {} } );
   }
 
