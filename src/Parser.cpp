@@ -1,5 +1,4 @@
 #include "Parser.h"
-#include "Output.h"
 
 #include <cassert>
 #include <cstdlib>
@@ -66,6 +65,7 @@ Parser::split_str( std::string_view string,
   }
 
   if (quote_started) {
+    return {};
   }
 
   if (s.size() != 0) {
