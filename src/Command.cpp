@@ -19,3 +19,7 @@ const Command * Commands::get( std::string_view token ) const {
 void Commands::add( const Command & command ) {
   _commands.insert_or_assign( command.token, command );
 }
+
+bool Commands::is_empty() const {
+  return _commands.size() == 0;
+}

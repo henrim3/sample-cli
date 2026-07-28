@@ -22,5 +22,5 @@ private:
   split_str( std::string_view s,
              const std::unordered_set<char> & delimiters ) const;
 
-  const Command * find_matching_command() const;
+  const Command * find_matching_command( const Tokens & tokens ) const;
 };

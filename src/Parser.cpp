@@ -1,4 +1,5 @@
 #include "Parser.h"
+#include "Output.h"
 
 #include <cassert>
 #include <cstdlib>
@@ -12,10 +13,17 @@ std::optional<Action> Parser::parse_action( std::string_view line ) const {
   std::optional<std::vector<std::string>> tokens = tokenize( line );
 
   if (!tokens) {
-    return {};
+    Output::error( "Parsing tokens failed" );
+    return std::nullopt;
   }
 
-  return {};
+  const Command * command = find_matching_command( tokens.value() );
+
+  if (command == nullptr) {
+    return std::nullopt;
+  }
+
+  return Action( { .command = *command, .arg_values = {} } );
 }
 
 std::optional<Tokens> Parser::tokenize( std::string_view s ) const {
@@ -65,7 +73,7 @@ Parser::split_str( std::string_view string,
   }
 
   if (quote_started) {
-    return {};
+    return std::nullopt;
   }
 
   if (s.size() != 0) {
@@ -75,10 +83,24 @@ Parser::split_str( std::string_view string,
   return v;
 }
 
-const Command * Parser::find_matching_command() const {
-  // const std::vector<Command> & commands = _command_registry.get_commands();
-  //
-  // for (std::string_view token : tokens) {
-  // }
-  return nullptr;
+const Command * Parser::find_matching_command( const Tokens & tokens ) const {
+  const Commands * commands = &_command_registry.get_commands();
+  const Command * found = nullptr; // deepest found command
+
+  for (std::string_view token : tokens) {
+    if (commands->is_empty()) {
+      return found;
+    }
+
+    const Command * command = commands->get( token );
+
+    if (command == nullptr) {
+      return found;
+    }
+
+    found = command;
+    commands = &command->subcommands;
+  }
+
+  return found;
 }

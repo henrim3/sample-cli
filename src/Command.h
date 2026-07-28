@@ -28,6 +28,8 @@ public:
   const Command * get( std::string_view token ) const;
   void add( const Command & command );
 
+  bool is_empty() const;
+
 private:
   std::unordered_map<std::string, Command> _commands;
 };

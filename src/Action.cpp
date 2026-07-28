@@ -1,6 +1,6 @@
 #include "Action.h"
 
-Action::Action( const ActionArgs & args )
+Action::Action( const InitializeActionArgs & args )
     : _command( args.command ), _arg_values( args.arg_values ) {}
 
 const Command & Action::get_command() const {
