@@ -1,7 +1,11 @@
 #include "Output.h"
 #include "ApplicationState.h"
+#include <cstdio>
 #include <iostream>
 
+void Output::init() {
+  std::setvbuf(stdout, NULL, _IONBF, 0); // disable output buffering
+}
 
 void Output::prompt( const ApplicationState & state ) {
   std::cout << "sample-cli ";
@@ -15,6 +19,10 @@ void Output::prompt( const ApplicationState & state ) {
 }
 
 void Output::print( std::string_view s ) {
+  std::cout << s;
+}
+
+void Output::println( std::string_view s ) {
   std::cout << s << std::endl;
 }
 
