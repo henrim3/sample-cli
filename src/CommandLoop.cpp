@@ -11,7 +11,6 @@ void CommandLoop::run() {
   while (true) {
     Output::prompt( _app.get_state() );
     std::string line = _input.get_line();
-    Output::newline();
     if (line == "quit") {
       return;
     }

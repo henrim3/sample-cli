@@ -30,10 +30,26 @@ std::string Input::get_line() const {
   std::string s = "";
   while (true) {
     char c = get_ch();
-    if (c == '\n') {
+    if (c == '\n' || c == '\r') {
+      Output::newline();
       return s;
     }
-    Output::print( c ); // output for now
+
+    // handle backspace
+    if (c == 127 || c == '\b') {
+      if (!s.empty()) {
+        s.pop_back();
+
+        // Erase character from the screen
+        Output::print( '\b' );
+        Output::print( ' ' );
+        Output::print( '\b' );
+      }
+      continue;
+    }
+
+    Output::print( c );
+
     s += c;
   }
 }
