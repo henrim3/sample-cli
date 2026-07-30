@@ -2,8 +2,18 @@
 
 #include "ApplicationState.h"
 #include <iostream>
+#include <array>
 #include <string>
 #include <termios.h>
+
+enum class SpecialKey {
+  ENTER,
+  BACKSPACE,
+  COUNT,
+};
+
+constexpr std::array<std::string, static_cast<size_t>( SpecialKey::COUNT )>
+  SpecialKeyNames{ "ENTER", "BACKSPACE" };
 
 class IO {
 public:
@@ -12,8 +22,8 @@ public:
 
   // Input
   static char get_ch();
-
   static std::string get_line();
+  static SpecialKey get_special_key();
 
   // Output
   static void print_prompt( const ApplicationState & state );
@@ -46,6 +56,14 @@ public:
     std::cout << std::endl;
   }
 
+  // State
+  static std::string_view get_input_buffer();
+  static bool increment_cursor_pos( int delta );
+  static void clear_input_buffer();
+  static bool backspace();
+
 private:
-  static termios oldt;
+  static termios _oldt;
+  static std::string _input_buffer;
+  static std::size_t _cursor_pos;
 };

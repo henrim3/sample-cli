@@ -13,7 +13,12 @@ public:
 
   CommandType get_command_type() const;
   const CommandArgs & get_args() const;
-  const CommandArg & get_arg( std::size_t i ) const;
+
+  template <typename T>
+  T get_arg( std::size_t i ) const {
+    return std::get<T>( _args[i].get_value() );
+  }
+
   std::size_t num_args() const;
 
 private:

@@ -11,10 +11,6 @@ const CommandArgs & Action::get_args() const {
   return _args;
 }
 
-const CommandArg & Action::get_arg( std::size_t i ) const {
-  return _args.at( i );
-}
-
 std::size_t Action::num_args() const {
   return _args.size();
 }

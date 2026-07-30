@@ -9,36 +9,13 @@ CommandLoop::CommandLoop( Application & app, const Parser & parser )
     : _app( app ), _parser( parser ) {}
 
 void CommandLoop::run() {
+  IO::print_prompt( _app.get_state() );
+
   while ( true ) {
-    IO::print_prompt( _app.get_state() );
-    std::string line = IO::get_line();
+    SpecialKey key = IO::get_special_key();
 
-    MaybeAction maybe_action = _parser.parse_action( line );
+    LoopResult result = handle_special_key_pressed( key );
 
-    if ( !maybe_action.has_value() ) {
-      IO::println( "No action" );
-      continue;
-    }
-
-    // action has been parsed successfully
-    const Action & action = maybe_action.value();
-
-    IO::println(
-      "Action type: ",
-      CommandTypeNames[static_cast<std::size_t>( action.get_command_type() )] );
-
-    std::size_t n_args = action.num_args();
-
-    if ( n_args != 0 ) {
-      IO::println( "Args:" );
-      for ( std::size_t i = 0; i < n_args; i++ ) {
-        IO::println( "Arg ", i, ":\n", action.get_arg( i ).to_string() );
-      }
-    } else {
-      IO::println( "No args" );
-    }
-
-    LoopResult result = handle_action( action );
     switch ( result ) {
       case LoopResult::ERROR:
         IO::print_error( "Exiting on error!!" );
@@ -49,6 +26,60 @@ void CommandLoop::run() {
       case LoopResult::KEEP_GOING:; // no-op
     }
   }
+}
+
+LoopResult CommandLoop::handle_special_key_pressed( SpecialKey key ) {
+  std::string line = std::string( IO::get_input_buffer() );
+
+  switch ( key ) {
+    case SpecialKey::COUNT: {
+      throw std::logic_error( "Got COUNT as key" );
+    }
+
+    case SpecialKey::BACKSPACE: {
+      IO::backspace();
+      return LoopResult::KEEP_GOING;
+    }
+
+    case SpecialKey::ENTER: {
+      IO::print_newline();
+      IO::clear_input_buffer();
+      break;
+    }
+  }
+
+  MaybeAction maybe_action = _parser.parse_action( line );
+
+  if ( !maybe_action.has_value() ) {
+    IO::println( "No action" );
+    IO::print_prompt( _app.get_state() );
+    return LoopResult::KEEP_GOING;
+  }
+
+  // action has been parsed successfully
+  const Action & action = maybe_action.value();
+
+  LoopResult res = handle_action( action );
+
+  IO::print_prompt( _app.get_state() );
+
+  return res;
+
+  // IO::println(
+  //   "Action type: ",
+  //   CommandTypeNames[static_cast<std::size_t>( action.get_command_type() )]
+  //   );
+  //
+  // std::size_t n_args = action.num_args();
+  //
+  // if ( n_args != 0 ) {
+  //   IO::println( "Args:" );
+  //   for ( std::size_t i = 0; i < n_args; i++ ) {
+  //     IO::println( "Arg ", i, ":\n", action.get_arg( i ).to_string() );
+  //   }
+  // } else {
+  //   IO::println( "No args" );
+  // }
 }
 
 LoopResult CommandLoop::handle_action( const Action & action ) {
@@ -71,8 +102,7 @@ LoopResult CommandLoop::handle_action( const Action & action ) {
     }
 
     case CommandType::NEW_SAMPLE: {
-      if ( !_app.load_sample(
-             std::get<std::string>( action.get_arg( 0 ).get_value() ) ) ) {
+      if ( !_app.load_sample( action.get_arg<std::string>( 0 ) ) ) {
         return LoopResult::KEEP_GOING;
       }
       return LoopResult::KEEP_GOING;
@@ -83,8 +113,7 @@ LoopResult CommandLoop::handle_action( const Action & action ) {
     }
 
     case CommandType::SELECT_SAMPLE: {
-      if ( !_app.select_sample(
-             std::get<std::size_t>( action.get_arg( 0 ).get_value() ) ) ) {
+      if ( !_app.select_sample( action.get_arg<std::size_t>( 0 ) ) ) {
         return LoopResult::KEEP_GOING;
       }
       return LoopResult::KEEP_GOING;
