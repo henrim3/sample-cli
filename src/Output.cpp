@@ -1,6 +1,5 @@
 #include "Output.h"
 #include "ApplicationState.h"
-#include <cstdio>
 #include <iostream>
 
 void Output::prompt( const ApplicationState & state ) {
@@ -14,30 +13,21 @@ void Output::prompt( const ApplicationState & state ) {
   std::cout << "> " << std::flush;
 }
 
-void Output::print( std::string_view s ) {
-  std::cout << s << std::flush;
+template <typename T>
+void Output::print( const T & value ) {
+  std::cout << value << std::flush;
 }
 
-void Output::print( char c ) {
-  std::cout << c << std::flush;
-}
-
-void Output::print( int i ) {
-  std::cout << i << std::flush;
-}
-
-void Output::print( std::size_t n ) {
-  std::cout << n << std::flush;
-}
-
-void Output::println( std::string_view s ) {
-  std::cout << s << std::endl;
+template <typename T>
+void Output::println( const T & value ) {
+  std::cout << value << std::endl;
 }
 
 void Output::newline() {
   std::cout << std::endl;
 }
 
-void Output::error( std::string_view s ) {
-  std::cout << s << std::endl;
+template <typename T>
+void Output::error( const T & value ) {
+  std::cout << value << std::endl;
 }
