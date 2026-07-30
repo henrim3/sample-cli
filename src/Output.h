@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ApplicationState.h"
-#include <string_view>
 
 class Output {
 public:
@@ -9,14 +8,14 @@ public:
 
   static void prompt( const ApplicationState & state );
 
-  static void print( std::string_view s );
-  static void print( char c );
-  static void print( int i );
-  static void print( std::size_t n );
+  template <typename T>
+  static void print( const T & value );
 
-  static void println( std::string_view s );
+  template <typename T>
+  static void println( const T & value );
 
   static void newline();
 
-  static void error( std::string_view s );
+  template <typename T>
+  static void error( const T & value );
 };
