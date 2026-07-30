@@ -6,6 +6,7 @@
 termios IO::_oldt{};
 std::string IO::_input_buffer = "";
 std::size_t IO::_cursor_pos = 0;
+std::string IO::_last_prompt = "";
 
 void IO::init() {
   // https://stackoverflow.com/questions/6698161/getting-raw-input-from-console-using-c-or-c
@@ -56,18 +57,25 @@ SpecialKey IO::get_special_key() {
 }
 
 void IO::print_prompt( const ApplicationState & state ) {
-  std::cout << "sample-cli ";
+  _last_prompt = "sample-cli ";
 
   // output selected sample id
   if ( state.get_mode() == ApplicationMode::Sample ) {
-    std::cout << "[sample " << state.get_selected_sample_id() << "] ";
+    _last_prompt +=
+      "[sample " + std::to_string( state.get_selected_sample_id() ) < "] ";
   }
 
-  std::cout << "> " << std::flush;
+  _last_prompt += "> ";
+
+  print( _last_prompt );
 }
 
 void IO::print_newline() {
   std::cout << std::endl;
+}
+
+void IO::flush_output() {
+  std::cout << std::flush;
 }
 
 std::string_view IO::get_input_buffer() {
@@ -75,8 +83,8 @@ std::string_view IO::get_input_buffer() {
 }
 
 void IO::handle_enter() {
-  print_newline();
   _input_buffer = "";
+  print_newline();
 }
 
 bool IO::handle_backspace() {
@@ -86,6 +94,19 @@ bool IO::handle_backspace() {
 
   _input_buffer.erase( _cursor_pos - 1, 1 );
   _cursor_pos--;
+
+  print_no_flush( "\r" );          // to beginning
+  print_no_flush( _last_prompt );  // prompt again
+  print_no_flush( "\x1b[K" );      // clear to end of line
+  print_no_flush( _input_buffer ); // print buffer
+  print_no_flush( "\r" );          // to beginning
+
+  // to cursor
+  for ( size_t i = 0; i < _last_prompt.size() + _cursor_pos; i++ ) {
+    print_no_flush( "\x1b[C" );
+  }
+
+  flush_output();
 
   return true;
 }
@@ -99,7 +120,7 @@ bool IO::handle_left_arrow() {
   return true;
 }
 bool IO::handle_right_arrow() {
-  if ( _cursor_pos == _input_buffer.size() - 1 ) {
+  if ( _cursor_pos == _input_buffer.size() ) {
     return false;
   }
   _cursor_pos++;

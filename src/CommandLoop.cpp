@@ -45,10 +45,6 @@ LoopResult CommandLoop::handle_special_key_pressed( SpecialKey key ) {
 
     case SpecialKey::BACKSPACE: {
       IO::handle_backspace();
-      // erase character from the screen
-      IO::print( '\b' );
-      IO::print( ' ' );
-      IO::print( '\b' );
       return LoopResult::KEEP_GOING;
     }
 

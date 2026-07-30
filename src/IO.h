@@ -37,6 +37,11 @@ public:
   static void print_prompt( const ApplicationState & state );
 
   template <typename... Ts>
+  static void print_no_flush( Ts &&... values ) {
+    ( std::cout << ... << values );
+  }
+
+  template <typename... Ts>
   static void print( Ts &&... values ) {
     ( std::cout << ... << values );
     std::cout << std::flush;
@@ -64,6 +69,8 @@ public:
     std::cout << std::endl;
   }
 
+  static void flush_output();
+
   // State
   static std::string_view get_input_buffer();
   static void handle_enter();
@@ -75,6 +82,7 @@ private:
   static termios _oldt;
   static std::string _input_buffer;
   static std::size_t _cursor_pos;
+  static std::string _last_prompt;
 
   static SpecialKey get_escape_or_arrow_key();
 };
