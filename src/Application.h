@@ -19,6 +19,14 @@ public:
 
   Sample * get_selected_sample();
 
+  // SAMPLE
+  bool select_sample( std::size_t id );
+  bool load_sample( std::string_view file_path );
+  bool play_current_sample();
+
+  // CORE
+  bool play();
+
   friend std::ostream & operator<<( std::ostream & os, Application a );
 
 private:

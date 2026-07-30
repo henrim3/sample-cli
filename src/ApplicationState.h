@@ -2,12 +2,9 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
-
-#include "Sample.h"
 
 enum class ApplicationMode {
-  Main,
+  Project,
   Sample,
 };
 
@@ -18,7 +15,7 @@ public:
   void set_mode( ApplicationMode mode );
   ApplicationMode get_mode() const;
 
-  bool select_sample( std::size_t id );
+  void select_sample( std::size_t id );
   bool select_last_sample();
   std::size_t get_selected_sample_id() const;
 
@@ -32,7 +29,6 @@ private:
   ApplicationMode _mode;
   bool _is_sample_selected;
   std::size_t _selected_sample_id;
-  std::vector<Sample> _samples;
 
   static std::string_view mode_to_string( ApplicationMode mode );
 };

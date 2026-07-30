@@ -12,10 +12,6 @@ int main() {
       .type = CommandType::QUIT,
     },
     {
-      .token = "quit",
-      .type = CommandType::QUIT,
-    },
-    {
       .token = "new",
       .type = CommandType::NEW,
       .is_phony = true,
@@ -24,8 +20,20 @@ int main() {
           {
             .token = "sample",
             .type = CommandType::NEW_SAMPLE,
+            .arg_types =
+              {
+                CommandArgType::STR,
+              },
           },
         },
+    },
+    {
+      .token = "play",
+      .type = CommandType::PLAY,
+    },
+    {
+      .token = "quit",
+      .type = CommandType::QUIT,
     },
     {
       .token = "select",
@@ -36,6 +44,14 @@ int main() {
           {
             .token = "pad",
             .type = CommandType::SELECT_PAD,
+            .arg_types =
+              {
+                CommandArgType::SIZE_T,
+              },
+          },
+          {
+            .token = "sample",
+            .type = CommandType::SELECT_SAMPLE,
             .arg_types =
               {
                 CommandArgType::SIZE_T,

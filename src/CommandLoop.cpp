@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "Command.h"
 #include "Output.h"
+#include <stdexcept>
 
 CommandLoop::CommandLoop( Application & app, const Input & input,
                           const Parser & parser )
@@ -38,9 +39,58 @@ void CommandLoop::run() {
       Output::println( "No args" );
     }
 
-    if ( action.get_command_type() == CommandType::QUIT ) {
-      Output::println( "Exiting..." );
-      return;
+    LoopResult result = handle_action( action );
+    switch ( result ) {
+      case LoopResult::ERROR:
+        Output::error( "Exiting on error!!" );
+        return;
+      case LoopResult::STOP:
+        Output::println( "Exiting..." );
+        return;
+      case LoopResult::KEEP_GOING:; // no-op
     }
   }
+}
+
+LoopResult CommandLoop::handle_action( const Action & action ) {
+  // MAKE SURE YOU RETURN!!
+  switch ( action.get_command_type() ) {
+    case CommandType::COUNT:
+
+      // phonies go here
+    case CommandType::NEW:
+    case CommandType::SELECT:
+      throw std::logic_error( "Got unsupported action somehow :(" );
+
+    case CommandType::PLAY: {
+      _app.play();
+      return LoopResult::KEEP_GOING;
+    }
+
+    case CommandType::QUIT: {
+      return LoopResult::STOP;
+    }
+
+    case CommandType::NEW_SAMPLE: {
+      if ( !_app.load_sample(
+             std::get<std::string>( action.get_arg( 0 ).get_value() ) ) ) {
+        return LoopResult::KEEP_GOING;
+      }
+      return LoopResult::KEEP_GOING;
+    }
+
+    case CommandType::SELECT_PAD: {
+      return LoopResult::KEEP_GOING;
+    }
+
+    case CommandType::SELECT_SAMPLE: {
+      if ( !_app.select_sample(
+             std::get<std::size_t>( action.get_arg( 0 ).get_value() ) ) ) {
+        return LoopResult::KEEP_GOING;
+      }
+      return LoopResult::KEEP_GOING;
+    }
+  }
+
+  return LoopResult::KEEP_GOING;
 }
