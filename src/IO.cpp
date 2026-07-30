@@ -1,9 +1,10 @@
-#include "Input.h"
-#include "Output.h"
+#include "IO.h"
 #include <termios.h>
 #include <unistd.h>
 
-Input::Input() {
+termios IO::oldt{};
+
+void IO::init() {
   // https://stackoverflow.com/questions/6698161/getting-raw-input-from-console-using-c-or-c
 
   termios newt;
@@ -16,22 +17,22 @@ Input::Input() {
   tcsetattr( STDIN_FILENO, TCSANOW, &newt ); // use new settings
 }
 
-Input::~Input() {
+void IO::destroy() {
   tcsetattr( STDIN_FILENO, TCSANOW, &oldt ); // reset terminal IO settings
 }
 
-char Input::get_ch() const {
+char IO::get_ch() {
   char c;
   read( STDIN_FILENO, &c, 1 );
   return c;
 }
 
-std::string Input::get_line() const {
+std::string IO::get_line() {
   std::string s = "";
   while ( true ) {
     char c = get_ch();
     if ( c == '\n' || c == '\r' ) {
-      Output::newline();
+      print_newline();
       return s;
     }
 
@@ -41,15 +42,32 @@ std::string Input::get_line() const {
         s.pop_back();
 
         // erase character from the screen
-        Output::print( '\b' );
-        Output::print( ' ' );
-        Output::print( '\b' );
+        print( '\b' );
+        print( ' ' );
+        print( '\b' );
       }
       continue;
     }
 
-    Output::print( c );
+    print( c );
 
     s += c;
   }
 }
+
+void IO::print_prompt( const ApplicationState & state ) {
+  std::cout << "sample-cli ";
+
+  // output selected sample id
+  if ( state.get_mode() == ApplicationMode::Sample ) {
+    std::cout << "[sample " << state.get_selected_sample_id() << "] ";
+  }
+
+  std::cout << "> " << std::flush;
+}
+
+void IO::print_newline() {
+  std::cout << std::endl;
+}
+
+

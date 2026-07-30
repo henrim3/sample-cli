@@ -1,6 +1,6 @@
 #include "Application.h"
 #include "ApplicationState.h"
-#include "Output.h"
+#include "IO.h"
 #include "Sample.h"
 #include "SampleManager.h"
 
@@ -20,7 +20,7 @@ Sample * Application::get_selected_sample() {
 
 bool Application::select_sample( std::size_t id ) {
   if ( !_sample_manager.has_sample( id ) ) {
-    Output::error( "Sample ", id, " doesn't exist" );
+    IO::print_error( "Sample ", id, " doesn't exist" );
     return false;
   }
 
@@ -31,12 +31,12 @@ bool Application::select_sample( std::size_t id ) {
 bool Application::load_sample( std::string_view file_path ) {
   Sample * sample = _sample_manager.load_sample( file_path );
   if ( sample == nullptr ) {
-    Output::error( "Couldn't load sample ", file_path );
+    IO::print_error( "Couldn't load sample ", file_path );
     return false;
   }
 
-  Output::println( "Successfully loaded file ", file_path, " into sample ",
-                   sample->get_id() );
+  IO::println( "Successfully loaded file ", file_path, " into sample ",
+               sample->get_id() );
 
   return true;
 }
@@ -44,7 +44,7 @@ bool Application::load_sample( std::string_view file_path ) {
 bool Application::play_current_sample() {
   Sample * sample = get_selected_sample();
   if ( sample == nullptr ) {
-    Output::error( "No sample selected" );
+    IO::print_error( "No sample selected" );
     return false;
   }
 
@@ -56,13 +56,13 @@ bool Application::play_current_sample() {
 bool Application::play() {
   switch ( _state.get_mode() ) {
     case ApplicationMode::Project:
-      Output::error( "Command not supported yet!" );
+      IO::print_error( "Command not supported yet!" );
       return false;
 
     case ApplicationMode::Sample:
       bool res = play_current_sample();
       if ( !res ) {
-        Output::error( "Couldn't play current sample" );
+        IO::print_error( "Couldn't play current sample" );
         return false;
       }
       return true;

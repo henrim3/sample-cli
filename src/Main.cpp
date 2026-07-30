@@ -2,7 +2,7 @@
 #include "Command.h"
 #include "CommandLoop.h"
 #include "CommandRegistry.h"
-#include "Input.h"
+#include "IO.h"
 #include "Parser.h"
 
 int main() {
@@ -61,12 +61,15 @@ int main() {
     },
   };
 
+  IO::init();
+
   Application app;
-  Input input;
   Parser parser( command_registry );
-  CommandLoop command_loop( app, input, parser );
+  CommandLoop command_loop( app, parser );
 
   command_loop.run();
+
+  IO::destroy();
 
   return 0;
 }

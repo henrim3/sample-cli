@@ -1,6 +1,6 @@
 #include "VoiceManager.h"
 
-#include "Output.h"
+#include "IO.h"
 #include "Sample.h"
 #include "Voice.h"
 
@@ -9,13 +9,13 @@ void VoiceManager::create_voice( std::size_t pad_id, const Sample & sample ) {
     Voice & voice = _voices[i];
     if ( !voice.is_active() ) {
       voice.start( pad_id, sample );
-      Output::debug( "Started playing voice ", i, " for pad ", pad_id,
-                     " sample ", sample.get_id() );
+      IO::print_debug( "Started playing voice ", i, " for pad ", pad_id, " sample ",
+                 sample.get_id() );
       return;
     }
   }
 
-  Output::error( "Ran out of voices!" );
+  IO::print_error( "Ran out of voices!" );
 }
 
 void VoiceManager::stop_voices_for_pad( std::size_t pad_id ) {
