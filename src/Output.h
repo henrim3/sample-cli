@@ -23,6 +23,13 @@ public:
   static void newline();
 
   template <typename... Ts>
+    static void debug( Ts &&... values ) {
+      std::cout << "DEBUG: ";
+      ( std::cout << ... << values );
+      std::cout << std::endl;
+    }
+
+  template <typename... Ts>
   static void error( Ts &&... values ) {
     std::cout << "ERROR: ";
     ( std::cout << ... << values );

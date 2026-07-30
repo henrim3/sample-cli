@@ -1,20 +1,28 @@
 #include "SampleManager.h"
 #include "FormatManager.h"
+#include "Output.h"
 #include "Sample.h"
 #include <stdexcept>
 
 SampleManager::SampleManager( FormatManager & format_manager )
     : _format_manager( format_manager ) {}
 
-Sample * SampleManager::load_sample( const std::string & path ) {
+Sample * SampleManager::load_sample( std::string_view file_path ) {
   std::size_t id = _next_id++;
   Sample sample( id );
 
-  juce::File file( path );
+  juce::File file(( std::string( file_path ) ));
+
+  if ( !file.existsAsFile() ) {
+    Output::error( "File ", file_path, "doesn't exist or is a directory" );
+    return nullptr;
+  }
+
   auto reader = std::unique_ptr<juce::AudioFormatReader>(
     _format_manager.get_format_manager().createReaderFor( file ) );
 
   if ( !reader ) {
+    Output::error( "No registered formats can open file ", file_path );
     return nullptr;
   }
 
@@ -23,12 +31,13 @@ Sample * SampleManager::load_sample( const std::string & path ) {
 
   if ( !reader->read( &sample._buffer, 0, sample._buffer.getNumSamples(), 0,
                       true, true ) ) {
+    Output::error( "Coudln't read file ", file_path );
     return nullptr;
   }
 
   sample._sample_rate = reader->sampleRate;
   sample._length_in_samples = reader->lengthInSamples;
-  sample._file_path = path;
+  sample._file_path = file_path;
 
   _samples.insert( { id, sample } );
 

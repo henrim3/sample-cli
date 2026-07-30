@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "Command.h"
 #include "Output.h"
+#include <stdexcept>
 
 CommandLoop::CommandLoop( Application & app, const Input & input,
                           const Parser & parser )
@@ -38,9 +39,45 @@ void CommandLoop::run() {
       Output::println( "No args" );
     }
 
-    if ( action.get_command_type() == CommandType::QUIT ) {
-      Output::println( "Exiting..." );
-      return;
+    LoopResult result = handle_action( action );
+    switch ( result ) {
+      case LoopResult::ERROR:
+        Output::error( "Exiting on error!!" );
+        return;
+      case LoopResult::STOP:
+        Output::println( "Exiting..." );
+        return;
+      case LoopResult::KEEP_GOING:; // no-op
     }
   }
+}
+
+LoopResult CommandLoop::handle_action( const Action & action ) {
+  switch ( action.get_command_type() ) {
+    case CommandType::QUIT:
+      return LoopResult::STOP;
+
+    case CommandType::COUNT:
+      throw std::logic_error( "Got COUNT action somehow :(" );
+
+    // phonies
+    case CommandType::NEW:
+    case CommandType::SELECT:
+      return LoopResult::KEEP_GOING;
+
+    case CommandType::NEW_SAMPLE:
+      if ( _app.get_sample_manager().load_sample( std::get<std::string>(
+             action.get_arg( 0 ).get_value() ) ) == nullptr ) {
+        return LoopResult::ERROR;
+      }
+      return LoopResult::KEEP_GOING;
+
+    case CommandType::SELECT_PAD:
+      return LoopResult::KEEP_GOING;
+
+    case CommandType::SELECT_SAMPLE:
+      return LoopResult::KEEP_GOING;
+  }
+
+  return LoopResult::KEEP_GOING;
 }

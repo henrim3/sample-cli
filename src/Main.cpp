@@ -24,6 +24,10 @@ int main() {
           {
             .token = "sample",
             .type = CommandType::NEW_SAMPLE,
+            .arg_types =
+              {
+                CommandArgType::STR,
+              },
           },
         },
     },
@@ -36,6 +40,14 @@ int main() {
           {
             .token = "pad",
             .type = CommandType::SELECT_PAD,
+            .arg_types =
+              {
+                CommandArgType::SIZE_T,
+              },
+          },
+          {
+            .token = "sample",
+            .type = CommandType::SELECT_SAMPLE,
             .arg_types =
               {
                 CommandArgType::SIZE_T,

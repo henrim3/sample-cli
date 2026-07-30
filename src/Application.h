@@ -19,6 +19,8 @@ public:
 
   Sample * get_selected_sample();
 
+  bool load_sample( std::string_view file_path );
+
   friend std::ostream & operator<<( std::ostream & os, Application a );
 
 private:

@@ -8,7 +8,7 @@ class SampleManager {
 public:
   SampleManager( FormatManager & format_manager );
 
-  Sample * load_sample( const std::string & file_path );
+  Sample * load_sample( std::string_view file_path );
   Sample * get_sample_by_id( std::size_t id );
 
 private:
