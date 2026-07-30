@@ -22,7 +22,7 @@ void Voice::render( juce::AudioBuffer<float> & output, int start_sample,
   auto & src = _sample->get_buffer();
 
   for ( int i = 0; i < num_samples; i++ ) {
-    // stop playing if reached end
+    // stop playing if reached end of sample
     if ( _position >= src.getNumSamples() ) {
       _is_active = false;
       break;

@@ -16,6 +16,7 @@ enum class CommandType {
   QUIT,
   NEW,
   NEW_SAMPLE,
+  PLAY,
   SELECT,
   SELECT_PAD,
   SELECT_SAMPLE,
@@ -23,7 +24,7 @@ enum class CommandType {
 };
 
 constexpr std::array<std::string, static_cast<size_t>( CommandType::COUNT )>
-  CommandTypeNames{ "QUIT",   "NEW",        "NEW_SAMPLE",
+  CommandTypeNames{ "QUIT",   "NEW",        "NEW_SAMPLE",   "PLAY",
                     "SELECT", "SELECT_PAD", "SELECT_SAMPLE" };
 
 enum class CommandArgType {

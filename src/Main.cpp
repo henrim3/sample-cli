@@ -12,10 +12,6 @@ int main() {
       .type = CommandType::QUIT,
     },
     {
-      .token = "quit",
-      .type = CommandType::QUIT,
-    },
-    {
       .token = "new",
       .type = CommandType::NEW,
       .is_phony = true,
@@ -30,6 +26,14 @@ int main() {
               },
           },
         },
+    },
+    {
+      .token = "play",
+      .type = CommandType::PLAY,
+    },
+    {
+      .token = "quit",
+      .type = CommandType::QUIT,
     },
     {
       .token = "select",

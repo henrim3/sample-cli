@@ -51,3 +51,11 @@ Sample * SampleManager::get_sample_by_id( std::size_t id ) {
     return nullptr;
   }
 }
+
+bool SampleManager::has_sample( std::size_t id ) const {
+  return _samples.contains( id );
+}
+
+std::size_t SampleManager::num_samples() const {
+  return _samples.size();
+}

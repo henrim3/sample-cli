@@ -53,30 +53,43 @@ void CommandLoop::run() {
 }
 
 LoopResult CommandLoop::handle_action( const Action & action ) {
+  // MAKE SURE YOU RETURN!!
   switch ( action.get_command_type() ) {
-    case CommandType::QUIT:
-      return LoopResult::STOP;
-
     case CommandType::COUNT:
-      throw std::logic_error( "Got COUNT action somehow :(" );
 
-    // phonies
+      // phonies go here
     case CommandType::NEW:
     case CommandType::SELECT:
-      return LoopResult::KEEP_GOING;
+      throw std::logic_error( "Got unsupported action somehow :(" );
 
-    case CommandType::NEW_SAMPLE:
-      if ( _app.get_sample_manager().load_sample( std::get<std::string>(
-             action.get_arg( 0 ).get_value() ) ) == nullptr ) {
-        return LoopResult::ERROR;
+    case CommandType::PLAY: {
+      _app.play();
+      return LoopResult::KEEP_GOING;
+    }
+
+    case CommandType::QUIT: {
+      return LoopResult::STOP;
+    }
+
+    case CommandType::NEW_SAMPLE: {
+      if ( !_app.load_sample(
+             std::get<std::string>( action.get_arg( 0 ).get_value() ) ) ) {
+        return LoopResult::KEEP_GOING;
       }
       return LoopResult::KEEP_GOING;
+    }
 
-    case CommandType::SELECT_PAD:
+    case CommandType::SELECT_PAD: {
       return LoopResult::KEEP_GOING;
+    }
 
-    case CommandType::SELECT_SAMPLE:
+    case CommandType::SELECT_SAMPLE: {
+      if ( !_app.select_sample(
+             std::get<std::size_t>( action.get_arg( 0 ).get_value() ) ) ) {
+        return LoopResult::KEEP_GOING;
+      }
       return LoopResult::KEEP_GOING;
+    }
   }
 
   return LoopResult::KEEP_GOING;
