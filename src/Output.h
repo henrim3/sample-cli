@@ -8,14 +8,24 @@ public:
 
   static void prompt( const ApplicationState & state );
 
-  template <typename T>
-  static void print( const T & value );
+  template <typename... Ts>
+  static void print( Ts &&... values ) {
+    ( std::cout << ... << values );
+    std::cout << std::flush;
+  }
 
-  template <typename T>
-  static void println( const T & value );
+  template <typename... Ts>
+  static void println( Ts &&... values ) {
+    ( std::cout << ... << values );
+    std::cout << std::endl;
+  }
 
   static void newline();
 
-  template <typename T>
-  static void error( const T & value );
+  template <typename... Ts>
+  static void error( Ts &&... values ) {
+    std::cout << "ERROR: ";
+    ( std::cout << ... << values );
+    std::cout << std::endl;
+  }
 };

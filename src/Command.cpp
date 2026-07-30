@@ -33,7 +33,7 @@ std::string CommandArg::to_string() const {
 
   return "CommandArg:\n  type: " +
          CommandArgTypeNames[static_cast<std::size_t>( _type )] +
-         "\n  value: " + value_str + "\n";
+         "\n  value: " + value_str;
 }
 
 Commands::Commands( std::initializer_list<Command> commands ) {
