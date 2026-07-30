@@ -24,7 +24,7 @@ void CommandLoop::run() {
     const Action & action = maybe_action.value();
 
     Output::println(
-      "Action type: " +
+      "Action type: ",
       CommandTypeNames[static_cast<std::size_t>( action.get_command_type() )] );
 
     std::size_t n_args = action.num_args();
@@ -32,8 +32,7 @@ void CommandLoop::run() {
     if ( n_args != 0 ) {
       Output::println( "Args:" );
       for ( std::size_t i = 0; i < n_args; i++ ) {
-        Output::print( "Arg " + std::to_string( i ) + ":\n" +
-                       action.get_arg( i ).to_string() );
+        Output::println( "Arg ", i, ":\n", action.get_arg( i ).to_string() );
       }
     } else {
       Output::println( "No args" );

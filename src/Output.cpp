@@ -13,21 +13,7 @@ void Output::prompt( const ApplicationState & state ) {
   std::cout << "> " << std::flush;
 }
 
-template <typename T>
-void Output::print( const T & value ) {
-  std::cout << value << std::flush;
-}
-
-template <typename T>
-void Output::println( const T & value ) {
-  std::cout << value << std::endl;
-}
-
 void Output::newline() {
   std::cout << std::endl;
 }
 
-template <typename T>
-void Output::error( const T & value ) {
-  std::cout << value << std::endl;
-}
