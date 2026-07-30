@@ -1,4 +1,5 @@
 #include "IO.h"
+#include <poll.h>
 #include <termios.h>
 #include <unistd.h>
 
@@ -29,62 +30,28 @@ char IO::get_ch() {
   return c;
 }
 
-std::string IO::get_line() {
-  std::string s = "";
-  while ( true ) {
-    char c = get_ch();
-    if ( c == '\n' || c == '\r' ) {
-      print_newline();
-      return s;
-    }
-
-    // handle backspace
-    if ( c == 127 || c == '\b' ) {
-      if ( !s.empty() ) {
-        s.pop_back();
-
-        // erase character from the screen
-        print( '\b' );
-        print( ' ' );
-        print( '\b' );
-      }
-      continue;
-    }
-
-    // TODO: check if readable
-
-    print( c );
-    _cursor_pos++;
-
-    s += c;
-  }
-}
-
 SpecialKey IO::get_special_key() {
   while ( true ) {
     char c = get_ch();
-    // newline
+    // enter
     if ( c == '\n' ) {
       return SpecialKey::ENTER;
     }
 
+    // escape key and arrows
+    if ( c == '\x1b' ) {
+      return get_escape_or_arrow_key();
+    }
+
     // backspace
     if ( c == 127 || c == '\b' ) {
-      if ( !_input_buffer.empty() ) {
-        _input_buffer.pop_back();
-
-        // erase character from the screen
-        print( '\b' );
-        print( ' ' );
-        print( '\b' );
-      }
-
       return SpecialKey::BACKSPACE;
     }
 
     print( c );
 
     _input_buffer += c;
+    _cursor_pos++;
   }
 }
 
@@ -107,20 +74,12 @@ std::string_view IO::get_input_buffer() {
   return _input_buffer;
 }
 
-bool IO::increment_cursor_pos( int delta ) {
-  if ( static_cast<int>( _cursor_pos ) + delta >= 0 ) {
-    _cursor_pos =
-      static_cast<std::size_t>( static_cast<int>( _cursor_pos ) + delta );
-    return true;
-  }
-  return false;
-}
-
-void IO::clear_input_buffer() {
+void IO::handle_enter() {
+  print_newline();
   _input_buffer = "";
 }
 
-bool IO::backspace() {
+bool IO::handle_backspace() {
   if ( _input_buffer.empty() || _cursor_pos == 0 ) {
     return false;
   }
@@ -129,4 +88,49 @@ bool IO::backspace() {
   _cursor_pos--;
 
   return true;
+}
+
+bool IO::handle_left_arrow() {
+  if ( _cursor_pos == 0 ) {
+    return false;
+  }
+  _cursor_pos--;
+  print( "\x1b[D" );
+  return true;
+}
+bool IO::handle_right_arrow() {
+  if ( _cursor_pos == _input_buffer.size() - 1 ) {
+    return false;
+  }
+  _cursor_pos++;
+  print( "\x1b[C" );
+  return true;
+}
+
+SpecialKey IO::get_escape_or_arrow_key() {
+  pollfd pfd{ STDIN_FILENO, POLLIN, 0 };
+
+  if ( poll( &pfd, 1, 20 ) == 0 ) {
+    // 20 ms elapsed, treat as escape
+    return SpecialKey::ESCAPE;
+  } else {
+    char seq[2];
+    read( STDIN_FILENO, &seq[0], 1 );
+    read( STDIN_FILENO, &seq[1], 1 );
+
+    if ( seq[0] == '[' ) {
+      switch ( seq[1] ) {
+        case 'A': // up
+          return SpecialKey::ARROW_UP;
+        case 'B': // down
+          return SpecialKey::ARROW_DOWN;
+        case 'C': // right
+          return SpecialKey::ARROW_RIGHT;
+        case 'D': // left
+          return SpecialKey::ARROW_LEFT;
+      }
+    }
+
+    return SpecialKey::UNHANDLED;
+  }
 }

@@ -29,22 +29,58 @@ void CommandLoop::run() {
 }
 
 LoopResult CommandLoop::handle_special_key_pressed( SpecialKey key ) {
+  // IO::println( "special key pressed: ",
+  //              SpecialKeyNames[static_cast<std::size_t>( key )] );
+
   std::string line = std::string( IO::get_input_buffer() );
 
+  // handle special keys first, it's only an action on enter
+
+  // ONLY break for enter because it will handle comannd
+  // REMEMBER TO RETURN or bad things happen :)
   switch ( key ) {
     case SpecialKey::COUNT: {
       throw std::logic_error( "Got COUNT as key" );
     }
 
     case SpecialKey::BACKSPACE: {
-      IO::backspace();
+      IO::handle_backspace();
+      // erase character from the screen
+      IO::print( '\b' );
+      IO::print( ' ' );
+      IO::print( '\b' );
+      return LoopResult::KEEP_GOING;
+    }
+
+    case SpecialKey::ARROW_DOWN: {
+      return LoopResult::KEEP_GOING;
+    }
+
+    case SpecialKey::ARROW_LEFT: {
+      IO::handle_left_arrow();
+      return LoopResult::KEEP_GOING;
+    }
+
+    case SpecialKey::ARROW_RIGHT: {
+      IO::handle_right_arrow();
+      return LoopResult::KEEP_GOING;
+    }
+
+    case SpecialKey::ARROW_UP: {
       return LoopResult::KEEP_GOING;
     }
 
     case SpecialKey::ENTER: {
-      IO::print_newline();
-      IO::clear_input_buffer();
+      IO::handle_enter();
       break;
+    }
+
+    case SpecialKey::ESCAPE: {
+      return LoopResult::KEEP_GOING;
+    }
+
+    case SpecialKey::UNHANDLED: {
+      return LoopResult::KEEP_GOING;
     }
   }
 

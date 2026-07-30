@@ -1,19 +1,28 @@
 #pragma once
 
 #include "ApplicationState.h"
-#include <iostream>
 #include <array>
+#include <iostream>
 #include <string>
 #include <termios.h>
 
 enum class SpecialKey {
-  ENTER,
   BACKSPACE,
+  ENTER,
+  ESCAPE,
+  ARROW_DOWN,
+  ARROW_LEFT,
+  ARROW_RIGHT,
+  ARROW_UP,
+  UNHANDLED,
   COUNT,
 };
 
 constexpr std::array<std::string, static_cast<size_t>( SpecialKey::COUNT )>
-  SpecialKeyNames{ "ENTER", "BACKSPACE" };
+  SpecialKeyNames{
+    "BACKSPACE",  "ENTER",       "ESCAPE",   "ARROW_DOWN",
+    "ARROW_LEFT", "ARROW_RIGHT", "ARROW_UP", "UNHANDLED",
+  };
 
 class IO {
 public:
@@ -22,7 +31,6 @@ public:
 
   // Input
   static char get_ch();
-  static std::string get_line();
   static SpecialKey get_special_key();
 
   // Output
@@ -58,12 +66,15 @@ public:
 
   // State
   static std::string_view get_input_buffer();
-  static bool increment_cursor_pos( int delta );
-  static void clear_input_buffer();
-  static bool backspace();
+  static void handle_enter();
+  static bool handle_backspace();
+  static bool handle_left_arrow();
+  static bool handle_right_arrow();
 
 private:
   static termios _oldt;
   static std::string _input_buffer;
   static std::size_t _cursor_pos;
+
+  static SpecialKey get_escape_or_arrow_key();
 };
