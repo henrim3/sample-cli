@@ -46,7 +46,7 @@ public:
   CommandArg( const InitializeCommandArgArgs & args );
 
   CommandArgType get_type() const;
-  CommandArgValue get_value() const;
+  const CommandArgValue & get_value() const;
 
   std::string to_string() const;
 

@@ -9,7 +9,7 @@ CommandArgType CommandArg::get_type() const {
   return _type;
 }
 
-CommandArgValue CommandArg::get_value() const {
+const CommandArgValue & CommandArg::get_value() const {
   return _value;
 }
 
