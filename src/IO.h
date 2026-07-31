@@ -73,6 +73,7 @@ public:
 
   // State
   static std::string_view get_input_buffer();
+  static void handle_input( char c );
   static void handle_enter();
   static bool handle_backspace();
   static bool handle_left_arrow();

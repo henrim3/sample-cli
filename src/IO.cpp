@@ -49,10 +49,7 @@ SpecialKey IO::get_special_key() {
       return SpecialKey::BACKSPACE;
     }
 
-    print( c );
-
-    _input_buffer += c;
-    _cursor_pos++;
+    handle_input( c );
   }
 }
 
@@ -78,6 +75,29 @@ void IO::flush_output() {
   std::cout << std::flush;
 }
 
+void IO::handle_input( char c ) {
+  // handle end-of-line input
+  if ( _cursor_pos == _input_buffer.size() ) {
+    _input_buffer.push_back( c );
+    _cursor_pos++;
+    print( c );
+    return;
+  }
+
+  // mid-line input
+  _input_buffer.insert( _cursor_pos, std::string( 1, c ) );
+  _cursor_pos++;
+
+  print_no_flush( c );
+  print_no_flush( _input_buffer.substr( _cursor_pos ) );
+
+  for ( std::size_t i = 0; i < _input_buffer.size() - _cursor_pos; i++ ) {
+    print_no_flush( "\x1b[D" );
+  }
+
+  flush_output();
+}
+
 std::string_view IO::get_input_buffer() {
   return _input_buffer;
 }
@@ -99,8 +119,8 @@ bool IO::handle_backspace() {
   print_no_flush( _last_prompt );  // prompt again
   print_no_flush( "\x1b[K" );      // clear to end of line
   print_no_flush( _input_buffer ); // print buffer
-  print_no_flush( "\r" );          // to beginning
 
+  print_no_flush( "\r" ); // to beginning
   // to cursor
   for ( size_t i = 0; i < _last_prompt.size() + _cursor_pos; i++ ) {
     print_no_flush( "\x1b[C" );
