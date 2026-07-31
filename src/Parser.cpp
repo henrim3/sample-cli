@@ -1,6 +1,6 @@
 #include "Parser.h"
 #include "Command.h"
-#include "Output.h"
+#include "IO.h"
 #include "StringConverter.h"
 
 #include <cassert>
@@ -14,7 +14,7 @@ MaybeAction Parser::parse_action( std::string_view line ) const {
   MaybeTokens maybe_tokens = tokenize( line );
 
   if ( !maybe_tokens ) {
-    Output::error( "Parsing tokens failed" );
+    IO::print_error( "Parsing tokens failed" );
     return std::nullopt;
   }
 
@@ -167,8 +167,8 @@ MaybeCommandArgs Parser::parse_args( const CommandArgTypes & arg_types,
   int n_args = end - begin;
 
   if ( expected_n_args != static_cast<std::size_t>( n_args ) ) {
-    Output::error( "Invalid number of aruguments (" + std::to_string( n_args ) +
-                   ") expected " + std::to_string( expected_n_args ) );
+    IO::print_error( "Invalid number of aruguments (" + std::to_string( n_args ) +
+               ") expected " + std::to_string( expected_n_args ) );
     return std::nullopt;
   }
 
@@ -181,7 +181,7 @@ MaybeCommandArgs Parser::parse_args( const CommandArgTypes & arg_types,
     MaybeCommandArg maybe_arg = validate_arg( *it, arg_types[i] );
 
     if ( !maybe_arg.has_value() ) {
-      Output::error( "Invalid argument " + std::to_string( i ) );
+      IO::print_error( "Invalid argument " + std::to_string( i ) );
       return std::nullopt;
     }
 

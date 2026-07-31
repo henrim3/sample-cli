@@ -1,6 +1,6 @@
 #include "SampleManager.h"
 #include "FormatManager.h"
-#include "Output.h"
+#include "IO.h"
 #include "Sample.h"
 #include <stdexcept>
 
@@ -14,7 +14,7 @@ Sample * SampleManager::load_sample( std::string_view file_path ) {
   juce::File file(( std::string( file_path ) ));
 
   if ( !file.existsAsFile() ) {
-    Output::error( "File ", file_path, "doesn't exist or is a directory" );
+    IO::print_error( "File ", file_path, "doesn't exist or is a directory" );
     return nullptr;
   }
 
@@ -22,7 +22,7 @@ Sample * SampleManager::load_sample( std::string_view file_path ) {
     _format_manager.get_format_manager().createReaderFor( file ) );
 
   if ( !reader ) {
-    Output::error( "No registered formats can open file ", file_path );
+    IO::print_error( "No registered formats can open file ", file_path );
     return nullptr;
   }
 
@@ -31,7 +31,7 @@ Sample * SampleManager::load_sample( std::string_view file_path ) {
 
   if ( !reader->read( &sample._buffer, 0, sample._buffer.getNumSamples(), 0,
                       true, true ) ) {
-    Output::error( "Coudln't read file ", file_path );
+    IO::print_error( "Coudln't read file ", file_path );
     return nullptr;
   }
 
