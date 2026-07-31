@@ -104,6 +104,7 @@ std::string_view IO::get_input_buffer() {
 
 void IO::handle_enter() {
   _input_buffer = "";
+  _cursor_pos = 0;
   print_newline();
 }
 
@@ -120,10 +121,9 @@ bool IO::handle_backspace() {
   print_no_flush( "\x1b[K" );      // clear to end of line
   print_no_flush( _input_buffer ); // print buffer
 
-  print_no_flush( "\r" ); // to beginning
-  // to cursor
-  for ( size_t i = 0; i < _last_prompt.size() + _cursor_pos; i++ ) {
-    print_no_flush( "\x1b[C" );
+  // move left back to cursor
+  for ( size_t i = 0; i < _input_buffer.size() - _cursor_pos; i++ ) {
+    print_no_flush( "\x1b[D" );
   }
 
   flush_output();
