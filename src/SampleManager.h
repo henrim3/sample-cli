@@ -13,6 +13,8 @@ public:
   bool has_sample( std::size_t id ) const;
   std::size_t num_samples() const;
 
+  const std::unordered_map<std::size_t, Sample> & get_samples() const;
+
 private:
   FormatManager & _format_manager;
   std::size_t _next_id = 0;

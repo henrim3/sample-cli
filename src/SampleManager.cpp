@@ -59,3 +59,8 @@ bool SampleManager::has_sample( std::size_t id ) const {
 std::size_t SampleManager::num_samples() const {
   return _samples.size();
 }
+
+const std::unordered_map<std::size_t, Sample> &
+SampleManager::get_samples() const {
+  return _samples;
+}

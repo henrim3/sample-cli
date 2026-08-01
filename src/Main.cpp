@@ -15,6 +15,19 @@ int main() {
       .type = CommandType::Quit,
     },
     {
+      .token = "list",
+      .type = CommandType::List,
+      .is_phony = true,
+      .subcommands =
+        {
+          {
+            .token = "samples",
+            .type = CommandType::ListSamples,
+            .is_global = true,
+          },
+        },
+    },
+    {
       .token = "new",
       .type = CommandType::New,
       .is_phony = true,
