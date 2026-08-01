@@ -1,74 +1,79 @@
 #include "App.h"
-#include "ApplicationState.h"
-#include "IO.h"
-#include "Sample.h"
-#include "SampleManager.h"
+#include "AppMode.h"
+#include "AppState.h"
+#include "ProjectMode.h"
+#include "SampleMode.h"
+#include <memory>
 
-App::App() {}
-
-SampleManager & App::get_sample_manager() {
-  return _sample_manager;
+App::App( AppContext & context ) : _context( std::move( context ) ) {
+  handle_mode_change( context.state.get_mode_type() );
 }
 
-ApplicationState & App::get_state() {
-  return _state;
-}
+LoopBehavior App::handle_key( SpecialKey key ) {
+  ModeResponse res = _mode->handle_key( key, _context );
 
-Sample * App::get_selected_sample() {
-  return _sample_manager.get_sample_by_id( _state.get_selected_sample_id() );
-}
-
-bool App::select_sample( std::size_t id ) {
-  if ( !_sample_manager.has_sample( id ) ) {
-    IO::print_error( "Sample ", id, " doesn't exist" );
-    return false;
+  if ( res.switch_to_mode.has_value() ) {
+    handle_mode_change( res.switch_to_mode.value() );
   }
 
-  _state.select_sample( id );
-  return true;
-}
+  if ( !res.was_consumed ) {
+    ModeResponse res_from_default =
+      _context.default_key_handler.handle_key( key );
 
-bool App::load_sample( std::string_view file_path ) {
-  Sample * sample = _sample_manager.load_sample( file_path );
-  if ( sample == nullptr ) {
-    IO::print_error( "Couldn't load sample ", file_path );
-    return false;
+    if ( res_from_default.switch_to_mode.has_value() ) {
+      handle_mode_change( res_from_default.switch_to_mode.value() );
+    }
+
+    if ( res_from_default.parsed_action.has_value() ) {
+      return handle_action( res_from_default.parsed_action.value() );
+    }
   }
 
-  IO::println( "Successfully loaded file ", file_path, " into sample ",
-               sample->get_id() );
-
-  return true;
+  return res.loop_should;
 }
 
-bool App::play_current_sample() {
-  Sample * sample = get_selected_sample();
-  if ( sample == nullptr ) {
-    IO::print_error( "No sample selected" );
-    return false;
+LoopBehavior App::handle_action( const Action & action ) {
+  ModeResponse res = _mode->handle_action( action, _context );
+
+  if ( res.switch_to_mode.has_value() ) {
+    handle_mode_change( res.switch_to_mode.value() );
   }
 
-  _voice_manager.create_voice( 0, *sample );
+  if ( !res.was_consumed ) {
+    ModeResponse default_res =
+      _context.default_action_handler.handle_action( action, _context );
 
-  return true;
-}
+    if ( default_res.switch_to_mode.has_value() ) {
+      handle_mode_change( default_res.switch_to_mode.value() );
+    }
 
-bool App::play() {
-  switch ( _state.get_mode() ) {
-    case ApplicationMode::Project:
-      IO::print_error( "Command not supported yet!" );
-      return false;
-
-    case ApplicationMode::Sample:
-      bool res = play_current_sample();
-      if ( !res ) {
-        IO::print_error( "Couldn't play current sample" );
-        return false;
-      }
-      return true;
+    return default_res.loop_should;
   }
+
+  return res.loop_should;
 }
 
-std::ostream & operator<<( std::ostream & os, App a ) {
-  return os << a._state;
+const AppContext & App::get_context() const {
+  return _context;
+}
+
+std::ostream & operator<<( std::ostream & os, const App & a ) {
+  return os << a._context.state;
+}
+
+void App::handle_mode_change( MaybeAppModeType maybe_mode_type ) {
+  if ( maybe_mode_type.has_value() ) {
+    AppModeType mode_type = maybe_mode_type.value();
+
+    _context.state.set_mode_type( mode_type );
+
+    switch ( mode_type ) {
+      case AppModeType::Project:
+        _mode = std::make_unique<ProjectMode>();
+        break;
+      case AppModeType::Sample:
+        _mode = std::make_unique<SampleMode>();
+        break;
+    }
+  }
 }

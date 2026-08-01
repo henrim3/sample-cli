@@ -1,28 +1,9 @@
 #pragma once
 
-#include "ApplicationState.h"
-#include <array>
+#include "AppContext.h"
 #include <iostream>
 #include <string>
 #include <termios.h>
-
-enum class SpecialKey {
-  BACKSPACE,
-  ENTER,
-  ESCAPE,
-  ARROW_DOWN,
-  ARROW_LEFT,
-  ARROW_RIGHT,
-  ARROW_UP,
-  UNHANDLED,
-  COUNT,
-};
-
-constexpr std::array<std::string, static_cast<size_t>( SpecialKey::COUNT )>
-  SpecialKeyNames{
-    "BACKSPACE",  "ENTER",       "ESCAPE",   "ARROW_DOWN",
-    "ARROW_LEFT", "ARROW_RIGHT", "ARROW_UP", "UNHANDLED",
-  };
 
 class IO {
 public:
@@ -34,7 +15,7 @@ public:
   static SpecialKey get_special_key();
 
   // Output
-  static void print_prompt( const ApplicationState & state );
+  static void print_prompt( const AppContext & context );
 
   template <typename... Ts>
   static void print_no_flush( Ts &&... values ) {

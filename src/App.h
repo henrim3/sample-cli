@@ -1,41 +1,25 @@
 #pragma once
 
-#include "ApplicationState.h"
-#include "AudioEngine.h"
-#include "DeviceManager.h"
-#include "FormatManager.h"
-#include "PadManager.h"
-#include "Sample.h"
-#include "SampleManager.h"
-#include "VoiceManager.h"
+#include "Action.h"
+#include "AppContext.h"
+#include "AppMode.h"
+#include "ModeResponse.h"
 #include <ostream>
 
 class App {
 public:
-  App();
+  App( AppContext & context );
 
-  SampleManager & get_sample_manager();
-  ApplicationState & get_state();
+  LoopBehavior handle_key( SpecialKey key );
+  LoopBehavior handle_action( const Action & action );
 
-  Sample * get_selected_sample();
+  const AppContext & get_context() const;
 
-  // SAMPLE
-  bool select_sample( std::size_t id );
-  bool load_sample( std::string_view file_path );
-  bool play_current_sample();
-
-  // CORE
-  bool play();
-
-  friend std::ostream & operator<<( std::ostream & os, App a );
+  friend std::ostream & operator<<( std::ostream & os, const App & a );
 
 private:
-  VoiceManager _voice_manager;
-  AudioEngine _audio_engine{ _voice_manager };
-  DeviceManager _device_manager{ _audio_engine };
-  FormatManager _format_manager;
-  SampleManager _sample_manager{ _format_manager };
-  PadManager _pad_manager{};
+  AppContext _context;
+  std::unique_ptr<IAppMode> _mode;
 
-  ApplicationState _state;
+  void handle_mode_change( std::optional<AppModeType> mode );
 };
