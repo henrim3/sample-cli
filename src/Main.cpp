@@ -1,11 +1,14 @@
-#include "Application.h"
 #include "Command.h"
 #include "CommandLoop.h"
 #include "CommandRegistry.h"
+#include "DefaultActionHandler.h"
+#include "DefaultKeyHandler.h"
 #include "IO.h"
 #include "Parser.h"
 
 int main() {
+  IO::init();
+
   CommandRegistry command_registry{
     {
       .token = "exit",
@@ -61,10 +64,31 @@ int main() {
     },
   };
 
-  IO::init();
-
-  Application app;
   Parser parser( command_registry );
+
+  VoiceManager voice_manager;
+  AudioEngine audio_engine( voice_manager );
+  DeviceManager device_manager( audio_engine );
+  FormatManager format_manager;
+  SampleManager sample_manager( format_manager );
+  PadManager pad_manager;
+  DefaultKeyHandler default_key_handler( parser );
+  DefaultActionHandler default_action_handler;
+  AppState state( AppModeType::Project );
+
+  AppContext context = {
+    .voice_manager = voice_manager,
+    .audio_engine = audio_engine,
+    .device_manager = device_manager,
+    .format_manager = format_manager,
+    .sample_manager = sample_manager,
+    .pad_manager = pad_manager,
+    .default_key_handler = default_key_handler,
+    .default_action_handler = default_action_handler,
+    .state = state,
+  };
+
+  App app( context );
   CommandLoop command_loop( app, parser );
 
   command_loop.run();

@@ -1,4 +1,5 @@
 #include "IO.h"
+#include "AppMode.h"
 #include <poll.h>
 #include <termios.h>
 #include <unistd.h>
@@ -53,13 +54,18 @@ SpecialKey IO::get_special_key() {
   }
 }
 
-void IO::print_prompt( const ApplicationState & state ) {
+void IO::print_prompt( const AppContext & context ) {
   _last_prompt = "sample-cli ";
 
   // output selected sample id
-  if ( state.get_mode() == ApplicationMode::Sample ) {
-    _last_prompt +=
-      "[sample " + std::to_string( state.get_selected_sample_id() ) < "] ";
+  switch ( context.state.get_mode_type() ) {
+    case AppModeType::Project:
+      break;
+    case AppModeType::Sample:
+      _last_prompt += "[sample " +
+                      std::to_string( context.state.get_selected_sample_id() ) +
+                      "] ";
+      break;
   }
 
   _last_prompt += "> ";

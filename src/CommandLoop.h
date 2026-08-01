@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Application.h"
-#include "IO.h"
+#include "App.h"
 #include "Parser.h"
 
 enum class LoopResult {
@@ -12,12 +11,12 @@ enum class LoopResult {
 
 class CommandLoop {
 public:
-  CommandLoop( Application & app, const Parser & parser );
+  CommandLoop( App & app, const Parser & parser );
 
   void run();
 
 private:
-  Application & _app;
+  App & _app;
   const Parser & _parser;
 
   LoopResult handle_special_key_pressed( SpecialKey key );
