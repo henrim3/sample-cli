@@ -1,6 +1,5 @@
 #pragma once
 
-#include <array>
 #include <initializer_list>
 #include <optional>
 #include <string>
@@ -13,6 +12,7 @@ using CommandArgValue = std::variant<std::string, std::size_t, int>;
 
 enum class CommandType {
   // MAKE SURE YOU ADD TO THE THING BELOW
+  Deselect,
   List,
   ListSamples,
   Quit,
@@ -22,14 +22,10 @@ enum class CommandType {
   Select,
   SelectPad,
   SelectSample,
+  Stop,
+  StopAll,
   Count
 };
-
-constexpr std::array<std::string, static_cast<size_t>( CommandType::Count )>
-  CommandTypeNames{
-    "List", "ListSamples", "Quit",      "New",          "NewSample",
-    "Play", "Select",      "SelectPad", "SelectSample",
-  };
 
 enum class CommandArgType {
   String,
@@ -37,9 +33,6 @@ enum class CommandArgType {
   Int,
   Count,
 };
-
-constexpr std::array<std::string, static_cast<size_t>( CommandArgType::Count )>
-  CommandArgTypeNames{ "String", "SizeT", "Int" };
 
 using CommandArgTypes = std::vector<CommandArgType>;
 

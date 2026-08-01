@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 ModeResponse ProjectMode::handle_key( SpecialKey key, AppContext & context ) {
+  (void)context;
   switch ( key ) {
     case SpecialKey::Count:
       throw std::logic_error( "Got Count as key" );
@@ -49,13 +50,17 @@ ModeResponse ProjectMode::handle_action( const Action & action,
       context.state.select_sample( action.get_arg<std::size_t>( 0 ) );
       return ModeResponse{};
 
+    case CommandType::Deselect:
     case CommandType::List:
     case CommandType::ListSamples:
-    case CommandType::Play: 
+    case CommandType::Play:
     case CommandType::SelectPad:
     case CommandType::New:
     case CommandType::Select:
+    case CommandType::Stop:
+    case CommandType::StopAll:
       IO::println( "Command not supported in current mode" );
       return ModeResponse{};
+      break;
   }
 }

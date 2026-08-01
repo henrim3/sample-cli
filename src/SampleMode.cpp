@@ -3,6 +3,7 @@
 #include <stdexcept>
 
 ModeResponse SampleMode::handle_key( SpecialKey key, AppContext & context ) {
+  (void)context;
   switch ( key ) {
     case SpecialKey::Count:
       std::logic_error( "Got Count as key" );
@@ -40,6 +41,7 @@ ModeResponse SampleMode::handle_action( const Action & action,
       return ModeResponse{};
     }
 
+    case CommandType::Deselect:
     case CommandType::List:
     case CommandType::ListSamples:
     case CommandType::New:
@@ -47,6 +49,8 @@ ModeResponse SampleMode::handle_action( const Action & action,
     case CommandType::Select:
     case CommandType::SelectPad:
     case CommandType::SelectSample:
+    case CommandType::Stop:
+    case CommandType::StopAll:
       IO::println( "Command not supported in current mode" );
       return ModeResponse{};
       break;

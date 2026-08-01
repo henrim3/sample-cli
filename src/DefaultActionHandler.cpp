@@ -14,6 +14,9 @@ ModeResponse DefaultActionHandler::handle_action( const Action & action,
     case CommandType::Quit:
       return ModeResponse{ .loop_should = LoopBehavior::Stop };
 
+    case CommandType::Deselect:
+      return ModeResponse{ .switch_to_mode = AppModeType::Project };
+
     case CommandType::ListSamples: {
       IO::println( "Samples:" );
       auto samples = context.sample_manager.get_samples();
@@ -37,12 +40,16 @@ ModeResponse DefaultActionHandler::handle_action( const Action & action,
       return ModeResponse{ .switch_to_mode = AppModeType::Sample };
     }
 
+    case CommandType::StopAll:
+      context.voice_manager.stop_all();
+
     case CommandType::List:
     case CommandType::New:
     case CommandType::NewSample:
     case CommandType::Play:
     case CommandType::Select:
     case CommandType::SelectPad:
+    case CommandType::Stop:
       return ModeResponse{};
   }
 }
