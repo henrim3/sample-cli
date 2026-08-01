@@ -7,21 +7,21 @@
 #include <termios.h>
 
 enum class SpecialKey {
-  BACKSPACE,
-  ENTER,
-  ESCAPE,
-  ARROW_DOWN,
-  ARROW_LEFT,
-  ARROW_RIGHT,
-  ARROW_UP,
-  UNHANDLED,
-  COUNT,
+  Backspace,
+  Enter,
+  Escape,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  Unhandled,
+  Count,
 };
 
-constexpr std::array<std::string, static_cast<size_t>( SpecialKey::COUNT )>
+constexpr std::array<std::string, static_cast<size_t>( SpecialKey::Count )>
   SpecialKeyNames{
-    "BACKSPACE",  "ENTER",       "ESCAPE",   "ARROW_DOWN",
-    "ARROW_LEFT", "ARROW_RIGHT", "ARROW_UP", "UNHANDLED",
+    "Backspace", "Enter",      "Escape",  "ArrowDown",
+    "ArrowLeft", "ArrowRight", "ArrowUp", "Unhandled",
   };
 
 class IO {

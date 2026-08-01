@@ -3,58 +3,57 @@
 #include "CommandLoop.h"
 #include "CommandRegistry.h"
 #include "IO.h"
-#include "Parser.h"
 
 int main() {
   CommandRegistry command_registry{
     {
       .token = "exit",
-      .type = CommandType::QUIT,
+      .type = CommandType::Quit,
     },
     {
       .token = "new",
-      .type = CommandType::NEW,
+      .type = CommandType::New,
       .is_phony = true,
       .subcommands =
         {
           {
             .token = "sample",
-            .type = CommandType::NEW_SAMPLE,
+            .type = CommandType::NewSample,
             .arg_types =
               {
-                CommandArgType::STR,
+                CommandArgType::String,
               },
           },
         },
     },
     {
       .token = "play",
-      .type = CommandType::PLAY,
+      .type = CommandType::Play,
     },
     {
       .token = "quit",
-      .type = CommandType::QUIT,
+      .type = CommandType::Quit,
     },
     {
       .token = "select",
-      .type = CommandType::SELECT,
+      .type = CommandType::Select,
       .is_phony = true,
       .subcommands =
         {
           {
             .token = "pad",
-            .type = CommandType::SELECT_PAD,
+            .type = CommandType::SelectPad,
             .arg_types =
               {
-                CommandArgType::SIZE_T,
+                CommandArgType::SizeT,
               },
           },
           {
             .token = "sample",
-            .type = CommandType::SELECT_SAMPLE,
+            .type = CommandType::SelectSample,
             .arg_types =
               {
-                CommandArgType::SIZE_T,
+                CommandArgType::SizeT,
               },
           },
         },
@@ -63,9 +62,8 @@ int main() {
 
   IO::init();
 
-  Application app;
-  Parser parser( command_registry );
-  CommandLoop command_loop( app, parser );
+  Application app( command_registry );
+  CommandLoop command_loop( app );
 
   command_loop.run();
 
