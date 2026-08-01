@@ -22,7 +22,7 @@ void CommandLoop::run() {
         IO::println( "Exiting..." );
         return;
       case LoopBehavior::KeepGoing:
-        if ( key == SpecialKey::ENTER ) {
+        if ( key == SpecialKey::Enter ) {
           IO::print_prompt( _app.get_context() );
         }
         break;

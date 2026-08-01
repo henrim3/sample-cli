@@ -4,9 +4,9 @@
 #include "Parser.h"
 
 enum class LoopResult {
-  KEEP_GOING,
-  STOP,
-  ERROR,
+  KeepGoing,
+  Stop,
+  Error,
 };
 
 class CommandLoop {

@@ -13,29 +13,36 @@ using CommandArgValue = std::variant<std::string, std::size_t, int>;
 
 enum class CommandType {
   // MAKE SURE YOU ADD TO THE THING BELOW
-  QUIT,
-  NEW,
-  NEW_SAMPLE,
-  PLAY,
-  SELECT,
-  SELECT_PAD,
-  SELECT_SAMPLE,
-  COUNT
+  Quit,
+  New,
+  NewSample,
+  Play,
+  Select,
+  SelectPad,
+  SelectSample,
+  Count
 };
 
-constexpr std::array<std::string, static_cast<size_t>( CommandType::COUNT )>
-  CommandTypeNames{ "QUIT",   "NEW",        "NEW_SAMPLE",   "PLAY",
-                    "SELECT", "SELECT_PAD", "SELECT_SAMPLE" };
+constexpr std::array<std::string, static_cast<size_t>( CommandType::Count )>
+  CommandTypeNames{
+  "Quit",
+  "New",
+  "NewSample",
+  "Play",
+  "Select",
+  "SelectPad",
+  "SelectSample",
+};
 
 enum class CommandArgType {
-  STR,
-  SIZE_T,
-  INT,
-  COUNT,
+  String,
+  SizeT,
+  Int,
+  Count,
 };
 
-constexpr std::array<std::string, static_cast<size_t>( CommandArgType::COUNT )>
-  CommandArgTypeNames{ "STR", "SIZE_T", "INT" };
+constexpr std::array<std::string, static_cast<size_t>( CommandArgType::Count )>
+  CommandArgTypeNames{ "String", "SizeT", "Int" };
 
 using CommandArgTypes = std::vector<CommandArgType>;
 
