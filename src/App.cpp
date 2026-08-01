@@ -33,7 +33,19 @@ LoopBehavior App::handle_key( SpecialKey key ) {
 }
 
 LoopBehavior App::handle_action( const Action & action ) {
-  ModeResponse res = _mode->handle_action( action, _context );
+  // if it's a global command just use default
+  if ( action.is_global() ) {
+    ModeResponse default_res =
+      _context.default_action_handler.handle_action( action, _context );
+
+    if ( default_res.switch_to_mode.has_value() ) {
+      handle_mode_change( default_res.switch_to_mode.value() );
+    }
+
+    return default_res.loop_should;
+  }
+
+    ModeResponse res = _mode->handle_action( action, _context );
 
   if ( res.switch_to_mode.has_value() ) {
     handle_mode_change( res.switch_to_mode.value() );

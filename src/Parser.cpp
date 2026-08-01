@@ -27,7 +27,11 @@ MaybeAction Parser::parse_action( std::string_view line ) const {
   }
 
   if ( tokens.size() == depth && command->arg_types.size() == 0 ) {
-    return Action( { .command_type = command->type, .args = {} } );
+    return Action( {
+      .command_type = command->type,
+      .args = {},
+      .is_global = command->is_global,
+    } );
   }
 
   MaybeCommandArgs maybe_args = parse_args(
@@ -37,8 +41,9 @@ MaybeAction Parser::parse_action( std::string_view line ) const {
     return std::nullopt;
   }
 
-  return Action(
-    { .command_type = command->type, .args = maybe_args.value() } );
+  return Action( { .command_type = command->type,
+                   .args = maybe_args.value(),
+                   .is_global = command->is_global } );
 }
 
 MaybeTokens Parser::tokenize( std::string_view s ) const {
@@ -167,8 +172,9 @@ MaybeCommandArgs Parser::parse_args( const CommandArgTypes & arg_types,
   int n_args = end - begin;
 
   if ( expected_n_args != static_cast<std::size_t>( n_args ) ) {
-    IO::print_error( "Invalid number of aruguments (" + std::to_string( n_args ) +
-               ") expected " + std::to_string( expected_n_args ) );
+    IO::print_error( "Invalid number of aruguments (" +
+                     std::to_string( n_args ) + ") expected " +
+                     std::to_string( expected_n_args ) );
     return std::nullopt;
   }
 

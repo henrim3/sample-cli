@@ -40,6 +40,8 @@ ModeResponse SampleMode::handle_action( const Action & action,
       return ModeResponse{};
     }
 
+    case CommandType::List:
+    case CommandType::ListSamples:
     case CommandType::New:
     case CommandType::NewSample:
     case CommandType::Select:
@@ -47,5 +49,6 @@ ModeResponse SampleMode::handle_action( const Action & action,
     case CommandType::SelectSample:
       IO::println( "Command not supported in current mode" );
       return ModeResponse{};
+      break;
   }
 }

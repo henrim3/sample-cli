@@ -13,6 +13,8 @@ using CommandArgValue = std::variant<std::string, std::size_t, int>;
 
 enum class CommandType {
   // MAKE SURE YOU ADD TO THE THING BELOW
+  List,
+  ListSamples,
   Quit,
   New,
   NewSample,
@@ -25,14 +27,9 @@ enum class CommandType {
 
 constexpr std::array<std::string, static_cast<size_t>( CommandType::Count )>
   CommandTypeNames{
-  "Quit",
-  "New",
-  "NewSample",
-  "Play",
-  "Select",
-  "SelectPad",
-  "SelectSample",
-};
+    "List", "ListSamples", "Quit",      "New",          "NewSample",
+    "Play", "Select",      "SelectPad", "SelectSample",
+  };
 
 enum class CommandArgType {
   String,
@@ -88,6 +85,7 @@ struct Command {
   std::string token;
   CommandType type;
   bool is_phony = false;
+  bool is_global = false;
   std::vector<CommandArgType> arg_types = {};
   Commands subcommands = {};
 };

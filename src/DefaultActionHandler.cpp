@@ -14,6 +14,19 @@ ModeResponse DefaultActionHandler::handle_action( const Action & action,
     case CommandType::Quit:
       return ModeResponse{ .loop_should = LoopBehavior::Stop };
 
+    case CommandType::ListSamples: {
+      IO::println( "Samples:" );
+      auto samples = context.sample_manager.get_samples();
+      if ( samples.empty() ) {
+        IO::println( "  No samples loaded" );
+        return ModeResponse{};
+      }
+      for ( const auto & [key, value] : samples ) {
+        IO::println( "  ", key, ": ", value.get_file_path() );
+      }
+      return ModeResponse{};
+    }
+
     case CommandType::SelectSample: {
       std::size_t id = action.get_arg<std::size_t>( 0 );
       if ( !context.sample_manager.has_sample( id ) ) {
@@ -24,6 +37,7 @@ ModeResponse DefaultActionHandler::handle_action( const Action & action,
       return ModeResponse{ .switch_to_mode = AppModeType::Sample };
     }
 
+    case CommandType::List:
     case CommandType::New:
     case CommandType::NewSample:
     case CommandType::Play:

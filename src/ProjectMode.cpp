@@ -49,6 +49,8 @@ ModeResponse ProjectMode::handle_action( const Action & action,
       context.state.select_sample( action.get_arg<std::size_t>( 0 ) );
       return ModeResponse{};
 
+    case CommandType::List:
+    case CommandType::ListSamples:
     case CommandType::Play: 
     case CommandType::SelectPad:
     case CommandType::New:
