@@ -32,7 +32,7 @@ std::string CommandArg::to_string() const {
     _value );
 
   return "CommandArg:\n  type: " +
-         CommandArgTypeNames[static_cast<std::size_t>( _type )] +
+         std::to_string( static_cast<std::size_t>( _type ) ) +
          "\n  value: " + value_str;
 }
 

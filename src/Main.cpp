@@ -11,6 +11,11 @@ int main() {
 
   CommandRegistry command_registry{
     {
+      .token = "deselect",
+      .type = CommandType::Deselect,
+      .is_global = true,
+    },
+    {
       .token = "exit",
       .type = CommandType::Quit,
     },
@@ -72,6 +77,19 @@ int main() {
               {
                 CommandArgType::SizeT,
               },
+          },
+        },
+    },
+    {
+      .token = "stop",
+      .type = CommandType::Stop,
+      .is_phony = true,
+      .subcommands =
+        {
+          {
+            .token = "all",
+            .type = CommandType::StopAll,
+            .is_global = true,
           },
         },
     },
