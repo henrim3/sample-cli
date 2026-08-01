@@ -8,13 +8,13 @@
 ModeResponse DefaultActionHandler::handle_action( const Action & action,
                                                   AppContext & context ) {
   switch ( action.get_command_type() ) {
-    case CommandType::COUNT:
-      throw std::logic_error( "Got COUNT as action" );
+    case CommandType::Count:
+      throw std::logic_error( "Got Count as action" );
 
-    case CommandType::QUIT:
+    case CommandType::Quit:
       return ModeResponse{ .loop_should = LoopBehavior::Stop };
 
-    case CommandType::SELECT_SAMPLE: {
+    case CommandType::SelectSample: {
       std::size_t id = action.get_arg<std::size_t>( 0 );
       if ( !context.sample_manager.has_sample( id ) ) {
         IO::print_error( "Sample ", id, " doesn't exist" );
@@ -24,11 +24,11 @@ ModeResponse DefaultActionHandler::handle_action( const Action & action,
       return ModeResponse{ .switch_to_mode = AppModeType::Sample };
     }
 
-    case CommandType::NEW:
-    case CommandType::NEW_SAMPLE:
-    case CommandType::PLAY:
-    case CommandType::SELECT:
-    case CommandType::SELECT_PAD:
+    case CommandType::New:
+    case CommandType::NewSample:
+    case CommandType::Play:
+    case CommandType::Select:
+    case CommandType::SelectPad:
       return ModeResponse{};
   }
 }

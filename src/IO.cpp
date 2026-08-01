@@ -37,7 +37,7 @@ SpecialKey IO::get_special_key() {
     char c = get_ch();
     // enter
     if ( c == '\n' ) {
-      return SpecialKey::ENTER;
+      return SpecialKey::Enter;
     }
 
     // escape key and arrows
@@ -47,7 +47,7 @@ SpecialKey IO::get_special_key() {
 
     // backspace
     if ( c == 127 || c == '\b' ) {
-      return SpecialKey::BACKSPACE;
+      return SpecialKey::Backspace;
     }
 
     handle_input( c );
@@ -159,7 +159,7 @@ SpecialKey IO::get_escape_or_arrow_key() {
 
   if ( poll( &pfd, 1, 20 ) == 0 ) {
     // 20 ms elapsed, treat as escape
-    return SpecialKey::ESCAPE;
+    return SpecialKey::Escape;
   } else {
     char seq[2];
     read( STDIN_FILENO, &seq[0], 1 );
@@ -168,16 +168,16 @@ SpecialKey IO::get_escape_or_arrow_key() {
     if ( seq[0] == '[' ) {
       switch ( seq[1] ) {
         case 'A': // up
-          return SpecialKey::ARROW_UP;
+          return SpecialKey::ArrowUp;
         case 'B': // down
-          return SpecialKey::ARROW_DOWN;
+          return SpecialKey::ArrowDown;
         case 'C': // right
-          return SpecialKey::ARROW_RIGHT;
+          return SpecialKey::ArrowRight;
         case 'D': // left
-          return SpecialKey::ARROW_LEFT;
+          return SpecialKey::ArrowLeft;
       }
     }
 
-    return SpecialKey::UNHANDLED;
+    return SpecialKey::Unhandled;
   }
 }

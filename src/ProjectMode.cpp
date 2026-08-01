@@ -1,24 +1,23 @@
 #include "ProjectMode.h"
-#include "AppMode.h"
 #include "IO.h"
 #include "Sample.h"
 #include <stdexcept>
 
 ModeResponse ProjectMode::handle_key( SpecialKey key, AppContext & context ) {
   switch ( key ) {
-    case SpecialKey::COUNT:
-      throw std::logic_error( "Got COUNT as key" );
+    case SpecialKey::Count:
+      throw std::logic_error( "Got Count as key" );
 
-    case SpecialKey::UNHANDLED:
-    case SpecialKey::ARROW_DOWN:
-    case SpecialKey::ARROW_UP:
-    case SpecialKey::BACKSPACE:
+    case SpecialKey::Unhandled:
+    case SpecialKey::ArrowDown:
+    case SpecialKey::ArrowUp:
+    case SpecialKey::Backspace:
       return ModeResponse{};
 
-    case SpecialKey::ENTER:
-    case SpecialKey::ESCAPE:
-    case SpecialKey::ARROW_LEFT:
-    case SpecialKey::ARROW_RIGHT:
+    case SpecialKey::Enter:
+    case SpecialKey::Escape:
+    case SpecialKey::ArrowLeft:
+    case SpecialKey::ArrowRight:
       return ModeResponse{};
   }
 }
@@ -26,13 +25,13 @@ ModeResponse ProjectMode::handle_key( SpecialKey key, AppContext & context ) {
 ModeResponse ProjectMode::handle_action( const Action & action,
                                          AppContext & context ) {
   switch ( action.get_command_type() ) {
-    case CommandType::COUNT:
-      throw std::logic_error( "Got COUNT as action" );
+    case CommandType::Count:
+      throw std::logic_error( "Got Count as action" );
 
-    case CommandType::QUIT:
+    case CommandType::Quit:
       return ModeResponse{ .loop_should = LoopBehavior::Stop };
 
-    case CommandType::NEW_SAMPLE: {
+    case CommandType::NewSample: {
       Sample * sample =
         context.sample_manager.load_sample( action.get_arg<std::string>( 0 ) );
 
@@ -46,14 +45,14 @@ ModeResponse ProjectMode::handle_action( const Action & action,
       return ModeResponse{};
     }
 
-    case CommandType::SELECT_SAMPLE:
+    case CommandType::SelectSample:
       context.state.select_sample( action.get_arg<std::size_t>( 0 ) );
       return ModeResponse{};
 
-    case CommandType::PLAY: 
-    case CommandType::SELECT_PAD:
-    case CommandType::NEW:
-    case CommandType::SELECT:
+    case CommandType::Play: 
+    case CommandType::SelectPad:
+    case CommandType::New:
+    case CommandType::Select:
       IO::println( "Command not supported in current mode" );
       return ModeResponse{};
   }

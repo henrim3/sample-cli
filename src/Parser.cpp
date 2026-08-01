@@ -126,17 +126,17 @@ Parser::find_matching_command( const Tokens & tokens ) const {
 MaybeCommandArg Parser::validate_arg( std::string_view token,
                                       CommandArgType expected_type ) const {
   switch ( expected_type ) {
-    case CommandArgType::INT: {
+    case CommandArgType::Int: {
       MaybeInt i = StringConverter::try_parse_int( token );
 
       if ( !i.has_value() ) {
         return std::nullopt;
       }
 
-      return CommandArg( { .type = CommandArgType::INT, .value = i.value() } );
+      return CommandArg( { .type = CommandArgType::Int, .value = i.value() } );
     }
 
-    case CommandArgType::SIZE_T: {
+    case CommandArgType::SizeT: {
       MaybeSizeT n = StringConverter::try_parse_size_t( token );
 
       if ( !n.has_value() ) {
@@ -144,15 +144,15 @@ MaybeCommandArg Parser::validate_arg( std::string_view token,
       }
 
       return CommandArg(
-        { .type = CommandArgType::SIZE_T, .value = n.value() } );
+        { .type = CommandArgType::SizeT, .value = n.value() } );
     }
 
-    case CommandArgType::STR: {
+    case CommandArgType::String: {
       return CommandArg(
-        { .type = CommandArgType::STR, .value = std::string( token ) } );
+        { .type = CommandArgType::String, .value = std::string( token ) } );
     }
 
-    case CommandArgType::COUNT: {
+    case CommandArgType::Count: {
       throw std::logic_error( "Invalid CommandArgType" );
     }
   }

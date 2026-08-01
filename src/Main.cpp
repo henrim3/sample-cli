@@ -12,52 +12,52 @@ int main() {
   CommandRegistry command_registry{
     {
       .token = "exit",
-      .type = CommandType::QUIT,
+      .type = CommandType::Quit,
     },
     {
       .token = "new",
-      .type = CommandType::NEW,
+      .type = CommandType::New,
       .is_phony = true,
       .subcommands =
         {
           {
             .token = "sample",
-            .type = CommandType::NEW_SAMPLE,
+            .type = CommandType::NewSample,
             .arg_types =
               {
-                CommandArgType::STR,
+                CommandArgType::String,
               },
           },
         },
     },
     {
       .token = "play",
-      .type = CommandType::PLAY,
+      .type = CommandType::Play,
     },
     {
       .token = "quit",
-      .type = CommandType::QUIT,
+      .type = CommandType::Quit,
     },
     {
       .token = "select",
-      .type = CommandType::SELECT,
+      .type = CommandType::Select,
       .is_phony = true,
       .subcommands =
         {
           {
             .token = "pad",
-            .type = CommandType::SELECT_PAD,
+            .type = CommandType::SelectPad,
             .arg_types =
               {
-                CommandArgType::SIZE_T,
+                CommandArgType::SizeT,
               },
           },
           {
             .token = "sample",
-            .type = CommandType::SELECT_SAMPLE,
+            .type = CommandType::SelectSample,
             .arg_types =
               {
-                CommandArgType::SIZE_T,
+                CommandArgType::SizeT,
               },
           },
         },

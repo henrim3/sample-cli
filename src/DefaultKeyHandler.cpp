@@ -8,17 +8,17 @@ DefaultKeyHandler::DefaultKeyHandler( const Parser & parser )
 
 ModeResponse DefaultKeyHandler::handle_key( SpecialKey key ) {
   switch ( key ) {
-    case SpecialKey::COUNT:
-      std::logic_error( "Got COUNT for key" );
+    case SpecialKey::Count:
+      std::logic_error( "Got Count for key" );
 
-    case SpecialKey::UNHANDLED:
+    case SpecialKey::Unhandled:
       return ModeResponse{};
 
-    case SpecialKey::BACKSPACE:
+    case SpecialKey::Backspace:
       IO::handle_backspace();
       return ModeResponse{};
 
-    case SpecialKey::ENTER: {
+    case SpecialKey::Enter: {
       std::string line = std::string( IO::get_input_buffer() );
       IO::handle_enter();
       MaybeAction maybe_action = _parser.parse_action( line );
@@ -29,17 +29,17 @@ ModeResponse DefaultKeyHandler::handle_key( SpecialKey key ) {
       return ModeResponse{ .parsed_action = maybe_action.value() };
     }
 
-    case SpecialKey::ESCAPE:
-    case SpecialKey::ARROW_DOWN:
-    case SpecialKey::ARROW_LEFT:
+    case SpecialKey::Escape:
+    case SpecialKey::ArrowDown:
+    case SpecialKey::ArrowLeft:
       IO::handle_left_arrow();
       return ModeResponse{};
 
-    case SpecialKey::ARROW_RIGHT:
+    case SpecialKey::ArrowRight:
       IO::handle_right_arrow();
       return ModeResponse{};
 
-    case SpecialKey::ARROW_UP:
+    case SpecialKey::ArrowUp:
       return ModeResponse{};
   }
 }
