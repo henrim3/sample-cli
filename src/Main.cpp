@@ -1,4 +1,4 @@
-#include "Application.h"
+#include "App.h"
 #include "Command.h"
 #include "CommandLoop.h"
 #include "CommandRegistry.h"
@@ -63,7 +63,7 @@ int main() {
 
   IO::init();
 
-  Application app;
+  App app;
   Parser parser( command_registry );
   CommandLoop command_loop( app, parser );
 

@@ -1,11 +1,11 @@
 #include "CommandLoop.h"
 
-#include "Application.h"
+#include "App.h"
 #include "Command.h"
 #include "IO.h"
 #include <stdexcept>
 
-CommandLoop::CommandLoop( Application & app, const Parser & parser )
+CommandLoop::CommandLoop( App & app, const Parser & parser )
     : _app( app ), _parser( parser ) {}
 
 void CommandLoop::run() {

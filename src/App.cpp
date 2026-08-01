@@ -1,24 +1,24 @@
-#include "Application.h"
+#include "App.h"
 #include "ApplicationState.h"
 #include "IO.h"
 #include "Sample.h"
 #include "SampleManager.h"
 
-Application::Application() {}
+App::App() {}
 
-SampleManager & Application::get_sample_manager() {
+SampleManager & App::get_sample_manager() {
   return _sample_manager;
 }
 
-ApplicationState & Application::get_state() {
+ApplicationState & App::get_state() {
   return _state;
 }
 
-Sample * Application::get_selected_sample() {
+Sample * App::get_selected_sample() {
   return _sample_manager.get_sample_by_id( _state.get_selected_sample_id() );
 }
 
-bool Application::select_sample( std::size_t id ) {
+bool App::select_sample( std::size_t id ) {
   if ( !_sample_manager.has_sample( id ) ) {
     IO::print_error( "Sample ", id, " doesn't exist" );
     return false;
@@ -28,7 +28,7 @@ bool Application::select_sample( std::size_t id ) {
   return true;
 }
 
-bool Application::load_sample( std::string_view file_path ) {
+bool App::load_sample( std::string_view file_path ) {
   Sample * sample = _sample_manager.load_sample( file_path );
   if ( sample == nullptr ) {
     IO::print_error( "Couldn't load sample ", file_path );
@@ -41,7 +41,7 @@ bool Application::load_sample( std::string_view file_path ) {
   return true;
 }
 
-bool Application::play_current_sample() {
+bool App::play_current_sample() {
   Sample * sample = get_selected_sample();
   if ( sample == nullptr ) {
     IO::print_error( "No sample selected" );
@@ -53,7 +53,7 @@ bool Application::play_current_sample() {
   return true;
 }
 
-bool Application::play() {
+bool App::play() {
   switch ( _state.get_mode() ) {
     case ApplicationMode::Project:
       IO::print_error( "Command not supported yet!" );
@@ -69,6 +69,6 @@ bool Application::play() {
   }
 }
 
-std::ostream & operator<<( std::ostream & os, Application a ) {
+std::ostream & operator<<( std::ostream & os, App a ) {
   return os << a._state;
 }

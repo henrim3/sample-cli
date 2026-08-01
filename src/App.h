@@ -10,9 +10,9 @@
 #include "VoiceManager.h"
 #include <ostream>
 
-class Application {
+class App {
 public:
-  Application();
+  App();
 
   SampleManager & get_sample_manager();
   ApplicationState & get_state();
@@ -27,7 +27,7 @@ public:
   // CORE
   bool play();
 
-  friend std::ostream & operator<<( std::ostream & os, Application a );
+  friend std::ostream & operator<<( std::ostream & os, App a );
 
 private:
   VoiceManager _voice_manager;
