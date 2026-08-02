@@ -24,7 +24,10 @@ enum class CommandType {
 
   // New
   New,
+  NewPad,
   NewSample,
+
+  // Play
   Play,
 
   // Select

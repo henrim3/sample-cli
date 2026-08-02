@@ -57,6 +57,10 @@ int main() {
       .subcommands =
         {
           {
+            .token = "pad",
+            .type = CommandType::NewPad,
+          },
+          {
             .token = "sample",
             .type = CommandType::NewSample,
             .arg_types =
