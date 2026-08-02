@@ -6,15 +6,15 @@ void HistoryManager::add_entry( std::string_view s ) {
   _cursor_pos++;
 }
 
-MaybeStringView HistoryManager::previous_command() {
+MaybeStringView HistoryManager::older_command() {
   if ( _cursor_pos == 0 || _entries.size() == 0 ) {
     return std::nullopt;
   }
   return _entries[--_cursor_pos];
 }
 
-MaybeStringView HistoryManager::next_command() {
-  if ( _cursor_pos == _entries.size() - 1 || _entries.size() == 0 ) {
+MaybeStringView HistoryManager::newer_command() {
+  if ( _cursor_pos >= _entries.size() - 1 || _entries.size() == 0 ) {
     return std::nullopt;
   }
   return _entries[++_cursor_pos];
