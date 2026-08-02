@@ -1,26 +1,38 @@
 #include "DefaultKeyHandler.h"
 #include "IO.h"
 #include "ModeResponse.h"
-#include <stdexcept>
 
 DefaultKeyHandler::DefaultKeyHandler( const Parser & parser )
     : _parser( parser ) {}
 
-ModeResponse DefaultKeyHandler::handle_key( SpecialKey key ) {
-  switch ( key ) {
-    case SpecialKey::Count:
-      std::logic_error( "Got Count for key" );
+ModeResponse DefaultKeyHandler::handle_key( Key key, AppContext & context ) {
+  LineEditor & line_editor = context.state.line_editor;
 
-    case SpecialKey::Unhandled:
+  if ( !key.special_type.has_value() ) {
+    line_editor.insert( key.s );
+    return ModeResponse{};
+  }
+
+  switch ( key.special_type.value() ) {
+    case SpecialKeyType::Unhandled:
       return ModeResponse{};
 
-    case SpecialKey::Backspace:
-      IO::handle_backspace();
+    case SpecialKeyType::ArrowLeft:
+      line_editor.move_left();
       return ModeResponse{};
 
-    case SpecialKey::Enter: {
-      std::string line = std::string( IO::get_input_buffer() );
-      IO::handle_enter();
+    case SpecialKeyType::ArrowRight:
+      line_editor.move_right();
+      return ModeResponse{};
+
+    case SpecialKeyType::Backspace:
+      context.state.line_editor.backspace();
+      return ModeResponse{};
+
+    case SpecialKeyType::Enter: {
+      std::string line = std::string( line_editor.get_text() );
+      line_editor.enter();
+      IO::print_newline();
       MaybeAction maybe_action = _parser.parse_action( line );
       if ( !maybe_action.has_value() ) {
         IO::print_error( "Command not found" );
@@ -29,17 +41,9 @@ ModeResponse DefaultKeyHandler::handle_key( SpecialKey key ) {
       return ModeResponse{ .parsed_action = maybe_action.value() };
     }
 
-    case SpecialKey::Escape:
-    case SpecialKey::ArrowDown:
-    case SpecialKey::ArrowLeft:
-      IO::handle_left_arrow();
-      return ModeResponse{};
-
-    case SpecialKey::ArrowRight:
-      IO::handle_right_arrow();
-      return ModeResponse{};
-
-    case SpecialKey::ArrowUp:
+    case SpecialKeyType::ArrowDown:
+    case SpecialKeyType::ArrowUp:
+    case SpecialKeyType::Escape:
       return ModeResponse{};
   }
 }

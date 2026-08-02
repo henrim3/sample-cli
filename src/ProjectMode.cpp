@@ -1,24 +1,25 @@
 #include "ProjectMode.h"
 #include "IO.h"
+#include "ModeResponse.h"
 #include "Sample.h"
-#include <stdexcept>
 
-ModeResponse ProjectMode::handle_key( SpecialKey key, AppContext & context ) {
+ModeResponse ProjectMode::handle_key( Key key, AppContext & context ) {
   (void)context;
-  switch ( key ) {
-    case SpecialKey::Count:
-      throw std::logic_error( "Got Count as key" );
+  if ( !key.special_type.has_value() ) {
+    return ModeResponse{};
+  }
 
-    case SpecialKey::Unhandled:
-    case SpecialKey::ArrowDown:
-    case SpecialKey::ArrowUp:
-    case SpecialKey::Backspace:
+  switch ( key.special_type.value() ) {
+    case SpecialKeyType::Unhandled:
+    case SpecialKeyType::ArrowDown:
+    case SpecialKeyType::ArrowUp:
+    case SpecialKeyType::Backspace:
       return ModeResponse{};
 
-    case SpecialKey::Enter:
-    case SpecialKey::Escape:
-    case SpecialKey::ArrowLeft:
-    case SpecialKey::ArrowRight:
+    case SpecialKeyType::Enter:
+    case SpecialKeyType::Escape:
+    case SpecialKeyType::ArrowLeft:
+    case SpecialKeyType::ArrowRight:
       return ModeResponse{};
   }
 }
@@ -26,15 +27,12 @@ ModeResponse ProjectMode::handle_key( SpecialKey key, AppContext & context ) {
 ModeResponse ProjectMode::handle_action( const Action & action,
                                          AppContext & context ) {
   switch ( action.get_command_type() ) {
-    case CommandType::Count:
-      throw std::logic_error( "Got Count as action" );
-
     case CommandType::Quit:
       return ModeResponse{ .loop_should = LoopBehavior::Stop };
 
     case CommandType::NewSample: {
-      Sample * sample =
-        context.sample_manager.load_sample( action.get_arg<std::string>( 0 ) );
+      Sample * sample = context.services.sample_manager.load_sample(
+        action.get_arg<std::string>( 0 ) );
 
       if ( sample == nullptr ) {
         IO::print_error( "Couldn't load sample" );
@@ -47,7 +45,7 @@ ModeResponse ProjectMode::handle_action( const Action & action,
     }
 
     case CommandType::SelectSample:
-      context.state.select_sample( action.get_arg<std::size_t>( 0 ) );
+      context.state.selected_sample_id = action.get_arg<std::size_t>( 0 );
       return ModeResponse{};
 
     case CommandType::Deselect:

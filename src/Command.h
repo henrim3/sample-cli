@@ -24,14 +24,12 @@ enum class CommandType {
   SelectSample,
   Stop,
   StopAll,
-  Count
 };
 
 enum class CommandArgType {
   String,
   SizeT,
   Int,
-  Count,
 };
 
 using CommandArgTypes = std::vector<CommandArgType>;

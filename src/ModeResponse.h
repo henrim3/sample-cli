@@ -12,8 +12,6 @@ enum class LoopBehavior {
   Error,
 };
 
-using MaybeAppModeType = std::optional<AppModeType>;
-
 struct ModeResponse {
   LoopBehavior loop_should = LoopBehavior::KeepGoing;
   MaybeAction parsed_action = std::nullopt;

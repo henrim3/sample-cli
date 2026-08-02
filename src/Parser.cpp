@@ -156,10 +156,6 @@ MaybeCommandArg Parser::validate_arg( std::string_view token,
       return CommandArg(
         { .type = CommandArgType::String, .value = std::string( token ) } );
     }
-
-    case CommandArgType::Count: {
-      throw std::logic_error( "Invalid CommandArgType" );
-    }
   }
 
   throw std::logic_error( "how" );

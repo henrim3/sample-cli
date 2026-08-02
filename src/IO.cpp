@@ -1,13 +1,12 @@
 #include "IO.h"
-#include "AppMode.h"
+#include "Key.h"
 #include <poll.h>
+#include <string>
 #include <termios.h>
 #include <unistd.h>
 
 termios IO::_oldt{};
-std::string IO::_input_buffer = "";
 std::size_t IO::_cursor_pos = 0;
-std::string IO::_last_prompt = "";
 
 void IO::init() {
   // https://stackoverflow.com/questions/6698161/getting-raw-input-from-console-using-c-or-c
@@ -32,12 +31,12 @@ char IO::get_ch() {
   return c;
 }
 
-SpecialKey IO::get_special_key() {
+Key IO::get_key() {
   while ( true ) {
     char c = get_ch();
     // enter
     if ( c == '\n' ) {
-      return SpecialKey::Enter;
+      return Key{ std::string( 1, c ), SpecialKeyType::Enter };
     }
 
     // escape key and arrows
@@ -47,30 +46,27 @@ SpecialKey IO::get_special_key() {
 
     // backspace
     if ( c == 127 || c == '\b' ) {
-      return SpecialKey::Backspace;
+      return Key{ std::string( 1, c ), SpecialKeyType::Backspace };
     }
 
-    handle_input( c );
+    return Key{ std::string( 1, c ) }; // return regular key
   }
 }
 
-void IO::print_prompt( const AppContext & context ) {
-  _last_prompt = "sample-cli ";
+void IO::render( std::string_view prompt, const LineEditor & editor ) {
+  print_no_flush( "\r" );     // to beginning
+  print_no_flush( prompt );   // print prompt
+  print( editor.get_text() ); // print buffer
+  print_no_flush( "\x1b[K" ); // clear to end of line
 
-  // output selected sample id
-  switch ( context.state.get_mode_type() ) {
-    case AppModeType::Project:
-      break;
-    case AppModeType::Sample:
-      _last_prompt += "[sample " +
-                      std::to_string( context.state.get_selected_sample_id() ) +
-                      "] ";
-      break;
+  print_no_flush( "\r" ); // to beginning
+
+  // to cursor
+  for ( std::size_t i = 0; i < prompt.size() + editor.get_cursor_pos(); i++ ) {
+    print_no_flush( "\x1b[C" );
   }
 
-  _last_prompt += "> ";
-
-  print( _last_prompt );
+  flush_output();
 }
 
 void IO::print_newline() {
@@ -81,85 +77,12 @@ void IO::flush_output() {
   std::cout << std::flush;
 }
 
-void IO::handle_input( char c ) {
-  // handle end-of-line input
-  if ( _cursor_pos == _input_buffer.size() ) {
-    _input_buffer.push_back( c );
-    _cursor_pos++;
-    print( c );
-    return;
-  }
-
-  // mid-line input
-  _input_buffer.insert( _cursor_pos, std::string( 1, c ) );
-  _cursor_pos++;
-
-  print_no_flush( c );
-  print_no_flush( _input_buffer.substr( _cursor_pos ) );
-
-  for ( std::size_t i = 0; i < _input_buffer.size() - _cursor_pos; i++ ) {
-    print_no_flush( "\x1b[D" );
-  }
-
-  flush_output();
-}
-
-std::string_view IO::get_input_buffer() {
-  return _input_buffer;
-}
-
-void IO::handle_enter() {
-  _input_buffer = "";
-  _cursor_pos = 0;
-  print_newline();
-}
-
-bool IO::handle_backspace() {
-  if ( _input_buffer.empty() || _cursor_pos == 0 ) {
-    return false;
-  }
-
-  _input_buffer.erase( _cursor_pos - 1, 1 );
-  _cursor_pos--;
-
-  print_no_flush( "\r" );          // to beginning
-  print_no_flush( _last_prompt );  // prompt again
-  print_no_flush( "\x1b[K" );      // clear to end of line
-  print_no_flush( _input_buffer ); // print buffer
-
-  // move left back to cursor
-  for ( size_t i = 0; i < _input_buffer.size() - _cursor_pos; i++ ) {
-    print_no_flush( "\x1b[D" );
-  }
-
-  flush_output();
-
-  return true;
-}
-
-bool IO::handle_left_arrow() {
-  if ( _cursor_pos == 0 ) {
-    return false;
-  }
-  _cursor_pos--;
-  print( "\x1b[D" );
-  return true;
-}
-bool IO::handle_right_arrow() {
-  if ( _cursor_pos == _input_buffer.size() ) {
-    return false;
-  }
-  _cursor_pos++;
-  print( "\x1b[C" );
-  return true;
-}
-
-SpecialKey IO::get_escape_or_arrow_key() {
+Key IO::get_escape_or_arrow_key() {
   pollfd pfd{ STDIN_FILENO, POLLIN, 0 };
 
   if ( poll( &pfd, 1, 20 ) == 0 ) {
     // 20 ms elapsed, treat as escape
-    return SpecialKey::Escape;
+    return Key{ "\x1b", SpecialKeyType::Escape };
   } else {
     char seq[2];
     read( STDIN_FILENO, &seq[0], 1 );
@@ -168,16 +91,16 @@ SpecialKey IO::get_escape_or_arrow_key() {
     if ( seq[0] == '[' ) {
       switch ( seq[1] ) {
         case 'A': // up
-          return SpecialKey::ArrowUp;
+          return Key{ "\x1b[A", SpecialKeyType::ArrowUp };
         case 'B': // down
-          return SpecialKey::ArrowDown;
+          return Key{ "\x1b[B", SpecialKeyType::ArrowDown };
         case 'C': // right
-          return SpecialKey::ArrowRight;
+          return Key{ "\x1b[C", SpecialKeyType::ArrowRight };
         case 'D': // left
-          return SpecialKey::ArrowLeft;
+          return Key{ "\x1b[D", SpecialKeyType::ArrowLeft };
       }
     }
 
-    return SpecialKey::Unhandled;
+    return Key{ "\x1b" + std::string( seq ), SpecialKeyType::Unhandled };
   }
 }
