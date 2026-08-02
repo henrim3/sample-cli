@@ -26,16 +26,14 @@ ModeResponse DefaultKeyHandler::handle_key( Key key, AppContext & context ) {
       return ModeResponse{};
 
     case SpecialKeyType::ArrowDown: {
-      MaybeStringView next_command = history_manager.next_command();
+      MaybeStringView next_command = history_manager.newer_command();
       if ( next_command.has_value() ) {
         line_editor.set_text( next_command.value() );
-      } else {
-        if ( context.state.is_history_active ) {
-          history_manager.reset_cursor();
-          context.state.is_history_active = false;
-          line_editor.set_text( context.state.cached_input.value() );
-          context.state.cached_input = std::nullopt;
-        }
+      } else if ( context.state.is_history_active ) {
+        history_manager.reset_cursor();
+        context.state.is_history_active = false;
+        line_editor.set_text( context.state.cached_input.value() );
+        context.state.cached_input = std::nullopt;
       }
 
       return ModeResponse{};
@@ -50,7 +48,7 @@ ModeResponse DefaultKeyHandler::handle_key( Key key, AppContext & context ) {
       return ModeResponse{};
 
     case SpecialKeyType::ArrowUp: {
-      MaybeStringView prev_command = history_manager.previous_command();
+      MaybeStringView prev_command = history_manager.older_command();
       if ( prev_command.has_value() ) {
         // history active
         if ( !context.state.is_history_active ) {
