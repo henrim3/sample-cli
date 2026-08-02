@@ -9,27 +9,20 @@ ModeResponse ProjectMode::handle_key( Key key, AppContext & context ) {
     return ModeResponse{};
   }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch-enum"
   switch ( key.special_type.value() ) {
-    case SpecialKeyType::Unhandled:
-    case SpecialKeyType::ArrowDown:
-    case SpecialKeyType::ArrowUp:
-    case SpecialKeyType::Backspace:
-      return ModeResponse{};
-
-    case SpecialKeyType::Enter:
-    case SpecialKeyType::Escape:
-    case SpecialKeyType::ArrowLeft:
-    case SpecialKeyType::ArrowRight:
+    default:
       return ModeResponse{};
   }
+#pragma GCC diagnostic pop
 }
 
 ModeResponse ProjectMode::handle_action( const Action & action,
                                          AppContext & context ) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch-enum"
   switch ( action.get_command_type() ) {
-    case CommandType::Quit:
-      return ModeResponse{ .loop_should = LoopBehavior::Stop };
-
     case CommandType::NewSample: {
       Sample * sample = context.services.sample_manager.load_sample(
         action.get_arg<std::string>( 0 ) );
@@ -48,17 +41,9 @@ ModeResponse ProjectMode::handle_action( const Action & action,
       context.state.selected_sample_id = action.get_arg<std::size_t>( 0 );
       return ModeResponse{};
 
-    case CommandType::Deselect:
-    case CommandType::List:
-    case CommandType::ListSamples:
-    case CommandType::Play:
-    case CommandType::SelectPad:
-    case CommandType::New:
-    case CommandType::Select:
-    case CommandType::Stop:
-    case CommandType::StopAll:
+    default:
       IO::println( "Command not supported in current mode" );
       return ModeResponse{};
-      break;
   }
+#pragma GCC diagnostic pop
 }

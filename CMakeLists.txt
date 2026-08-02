@@ -36,6 +36,11 @@ target_compile_definitions(${PROJECT_NAME}
         JUCE_USE_CURL=0
 )
 
+target_compile_options(${PROJECT_NAME} 
+  PRIVATE 
+    -Wno-switch-enum
+)
+
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
         juce::juce_audio_utils
