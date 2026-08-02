@@ -1,10 +1,14 @@
+#include "AppModeType.h"
 #include "Command.h"
 #include "CommandLoop.h"
 #include "CommandRegistry.h"
 #include "DefaultActionHandler.h"
 #include "DefaultKeyHandler.h"
+#include "HistoryManager.h"
 #include "IO.h"
+#include "LineEditor.h"
 #include "Parser.h"
+#include <optional>
 
 int main() {
   IO::init();
@@ -103,23 +107,31 @@ int main() {
   FormatManager format_manager;
   SampleManager sample_manager( format_manager );
   PadManager pad_manager;
-  DefaultKeyHandler default_key_handler( parser );
-  DefaultActionHandler default_action_handler;
-  AppState state( AppModeType::Project );
+
+  AppServices services{ .voice_manager = voice_manager,
+                        .sample_manager = sample_manager,
+                        .pad_manager = pad_manager,
+                        .audio_engine = audio_engine,
+                        .device_manager = device_manager,
+                        .format_manager = format_manager };
+
+  LineEditor line_editor;
+  HistoryManager history_manager;
+
+  AppState state{ .mode = AppModeType::Project,
+                  .selected_sample_id = std::nullopt,
+                  .line_editor = line_editor,
+                  .history_manager = history_manager };
 
   AppContext context = {
-    .voice_manager = voice_manager,
-    .audio_engine = audio_engine,
-    .device_manager = device_manager,
-    .format_manager = format_manager,
-    .sample_manager = sample_manager,
-    .pad_manager = pad_manager,
-    .default_key_handler = default_key_handler,
-    .default_action_handler = default_action_handler,
+    .services = services,
     .state = state,
   };
 
-  App app( context );
+  DefaultKeyHandler default_key_handler( parser );
+  DefaultActionHandler default_action_handler;
+
+  App app( context, default_key_handler, default_action_handler );
   CommandLoop command_loop( app, parser );
 
   command_loop.run();

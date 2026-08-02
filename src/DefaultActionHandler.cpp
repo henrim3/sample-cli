@@ -3,14 +3,14 @@
 #include "AppModeType.h"
 #include "IO.h"
 #include "ModeResponse.h"
-#include <stdexcept>
+#include "SampleManager.h"
 
 ModeResponse DefaultActionHandler::handle_action( const Action & action,
                                                   AppContext & context ) {
-  switch ( action.get_command_type() ) {
-    case CommandType::Count:
-      throw std::logic_error( "Got Count as action" );
+  SampleManager & sample_manager = context.services.sample_manager;
+  VoiceManager & voice_manager = context.services.voice_manager;
 
+  switch ( action.get_command_type() ) {
     case CommandType::Quit:
       return ModeResponse{ .loop_should = LoopBehavior::Stop };
 
@@ -19,7 +19,7 @@ ModeResponse DefaultActionHandler::handle_action( const Action & action,
 
     case CommandType::ListSamples: {
       IO::println( "Samples:" );
-      auto samples = context.sample_manager.get_samples();
+      auto samples = sample_manager.get_samples();
       if ( samples.empty() ) {
         IO::println( "  No samples loaded" );
         return ModeResponse{};
@@ -32,16 +32,16 @@ ModeResponse DefaultActionHandler::handle_action( const Action & action,
 
     case CommandType::SelectSample: {
       std::size_t id = action.get_arg<std::size_t>( 0 );
-      if ( !context.sample_manager.has_sample( id ) ) {
+      if ( !sample_manager.has_sample( id ) ) {
         IO::print_error( "Sample ", id, " doesn't exist" );
         return ModeResponse{};
       }
-      context.state.select_sample( id );
+      context.state.selected_sample_id = id;
       return ModeResponse{ .switch_to_mode = AppModeType::Sample };
     }
 
     case CommandType::StopAll:
-      context.voice_manager.stop_all();
+      voice_manager.stop_all();
 
     case CommandType::List:
     case CommandType::New:

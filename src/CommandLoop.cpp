@@ -7,12 +7,13 @@ CommandLoop::CommandLoop( App & app, const Parser & parser )
     : _app( app ), _parser( parser ) {}
 
 void CommandLoop::run() {
-  IO::print_prompt( _app.get_context() );
+  _app.render();
 
   while ( true ) {
-    SpecialKey key = IO::get_special_key();
+    Key key = IO::get_key();
 
     LoopBehavior result = _app.handle_key( key );
+    _app.render();
 
     switch ( result ) {
       case LoopBehavior::Error:
@@ -22,9 +23,6 @@ void CommandLoop::run() {
         IO::println( "Exiting..." );
         return;
       case LoopBehavior::KeepGoing:
-        if ( key == SpecialKey::Enter ) {
-          IO::print_prompt( _app.get_context() );
-        }
         break;
       case LoopBehavior::KeepGoingNoPrompt:
         return;

@@ -1,22 +1,24 @@
 #pragma once
 
-#include "AppContext.h"
+#include "Key.h"
+#include "LineEditor.h"
 #include <iostream>
-#include <string>
 #include <termios.h>
 
 class IO {
 public:
+  // Lifecycle
   static void init();
   static void destroy();
 
   // Input
   static char get_ch();
-  static SpecialKey get_special_key();
+  static Key get_key();
+
+  // Render
+  static void render( std::string_view prompt, const LineEditor & editor );
 
   // Output
-  static void print_prompt( const AppContext & context );
-
   template <typename... Ts>
   static void print_no_flush( Ts &&... values ) {
     ( std::cout << ... << values );
@@ -52,19 +54,9 @@ public:
 
   static void flush_output();
 
-  // State
-  static std::string_view get_input_buffer();
-  static void handle_input( char c );
-  static void handle_enter();
-  static bool handle_backspace();
-  static bool handle_left_arrow();
-  static bool handle_right_arrow();
-
 private:
   static termios _oldt;
-  static std::string _input_buffer;
   static std::size_t _cursor_pos;
-  static std::string _last_prompt;
 
-  static SpecialKey get_escape_or_arrow_key();
+  static Key get_escape_or_arrow_key();
 };
