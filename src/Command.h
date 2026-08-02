@@ -11,17 +11,28 @@
 using CommandArgValue = std::variant<std::string, std::size_t, int>;
 
 enum class CommandType {
-  // MAKE SURE YOU ADD TO THE THING BELOW
   Deselect,
+
+  // History
+  History,
+  FullHistory,
+
+  // List
   List,
   ListSamples,
   Quit,
+
+  // New
   New,
   NewSample,
   Play,
+
+  // Select
   Select,
   SelectPad,
   SelectSample,
+
+  // Stop
   Stop,
   StopAll,
 };

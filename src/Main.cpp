@@ -22,6 +22,20 @@ int main() {
     {
       .token = "exit",
       .type = CommandType::Quit,
+      .is_global = true,
+    },
+    {
+      .token = "history",
+      .type = CommandType::History,
+      .is_global = true,
+      .subcommands =
+        {
+          {
+            .token = "full",
+            .type = CommandType::FullHistory,
+            .is_global = true,
+          },
+        },
     },
     {
       .token = "list",
@@ -59,6 +73,7 @@ int main() {
     {
       .token = "quit",
       .type = CommandType::Quit,
+      .is_global = true,
     },
     {
       .token = "select",
