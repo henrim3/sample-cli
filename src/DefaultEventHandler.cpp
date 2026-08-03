@@ -1,13 +1,11 @@
-#include "DefaultKeyHandler.h"
-#include "HistoryManager.h"
+#include "DefaultEventHandler.h"
 #include "IO.h"
-#include "ModeResponse.h"
-#include "TypeDefs.h"
 
-DefaultKeyHandler::DefaultKeyHandler( const Parser & parser )
+DefaultEventHandler::DefaultEventHandler( const Parser & parser )
     : _parser( parser ) {}
 
-ModeResponse DefaultKeyHandler::handle_key( Key key, AppContext & context ) {
+ModeResponse DefaultEventHandler::handle_key( Key key,
+                                              AppContext & context ) const {
   LineEditor & line_editor = context.state.line_editor;
   HistoryManager & history_manager = context.state.history_manager;
 
@@ -50,7 +48,7 @@ ModeResponse DefaultKeyHandler::handle_key( Key key, AppContext & context ) {
     case SpecialKeyType::ArrowUp: {
       MaybeStringView prev_command = history_manager.older_command();
       if ( prev_command.has_value() ) {
-        // history active
+        // history is active
         if ( !context.state.is_history_active ) {
           context.state.is_history_active = true;
           context.state.cached_input = line_editor.get_text();
@@ -66,20 +64,46 @@ ModeResponse DefaultKeyHandler::handle_key( Key key, AppContext & context ) {
       return ModeResponse{};
 
     case SpecialKeyType::Enter: {
+      // history inactive
       context.state.is_history_active = false;
       history_manager.reset_cursor();
+
       std::string line = std::string( line_editor.get_text() );
+
       context.state.history_manager.add_entry( line );
+
       line_editor.enter();
       IO::print_newline();
-      MaybeAction maybe_action = _parser.parse_action( line );
-      if ( !maybe_action.has_value() ) {
+
+      // check if it's a global action first
+      MaybeAction global_action = _parser.parse_global_action( line );
+      if ( global_action.has_value() ) {
+        return ModeResponse{ .parsed_action = global_action.value() };
+      }
+
+      // it's a mode action if not global
+      MaybeAction mode_action =
+        _parser.parse_mode_action( line, context.state.mode );
+      if ( !mode_action.has_value() ) {
         IO::print_error( "Command not found" );
         return ModeResponse{};
       }
-      return ModeResponse{ .parsed_action = maybe_action.value() };
+      return ModeResponse{ .parsed_action = mode_action.value() };
     }
 
+    default:
+      return ModeResponse{};
+  }
+#pragma GCC diagnostic pop
+}
+
+ModeResponse DefaultEventHandler::handle_action( const Action & action,
+                                                 AppContext & context ) const {
+
+  (void)context; // unused for now
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch-enum"
+  switch ( action.command_type ) {
     default:
       return ModeResponse{};
   }

@@ -1,9 +1,8 @@
-#include "ProjectMode.h"
+#include "ProjectModeEventHandler.h"
 #include "IO.h"
-#include "ModeResponse.h"
-#include "Sample.h"
 
-ModeResponse ProjectMode::handle_key( Key key, AppContext & context ) {
+ModeResponse ProjectModeEventHandler::handle_key( Key key,
+                                                  AppContext & context ) const {
   (void)context;
   if ( !key.special_type.has_value() ) {
     return ModeResponse{};
@@ -18,11 +17,12 @@ ModeResponse ProjectMode::handle_key( Key key, AppContext & context ) {
 #pragma GCC diagnostic pop
 }
 
-ModeResponse ProjectMode::handle_action( const Action & action,
-                                         AppContext & context ) {
+ModeResponse
+ProjectModeEventHandler::handle_action( const Action & action,
+                                        AppContext & context ) const {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wswitch-enum"
-  switch ( action.get_command_type() ) {
+  switch ( action.command_type ) {
     case CommandType::NewSample: {
       Sample * sample = context.services.sample_manager.load_sample(
         action.get_arg<std::string>( 0 ) );
@@ -39,10 +39,11 @@ ModeResponse ProjectMode::handle_action( const Action & action,
 
     case CommandType::SelectSample:
       context.state.selected_sample_id = action.get_arg<std::size_t>( 0 );
+      context.state.mode = AppMode::Sample;
       return ModeResponse{};
 
     default:
-      IO::println( "Command not supported in current mode" );
+      IO::println( "Command not supported in Project mode" );
       return ModeResponse{};
   }
 #pragma GCC diagnostic pop
