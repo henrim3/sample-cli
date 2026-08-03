@@ -1,5 +1,7 @@
 #include "Parser.h"
+#include "AppMode.h"
 #include "Command.h"
+#include "CommandRegistry.h"
 #include "IO.h"
 #include "StringConverter.h"
 
@@ -10,7 +12,7 @@
 Parser::Parser( const CommandRegistry & command_registry )
     : _command_registry( command_registry ) {}
 
-MaybeAction Parser::parse_action( std::string_view line ) const {
+MaybeAction Parser::parse_global_action( std::string_view line ) const {
   MaybeTokens maybe_tokens = tokenize( line );
 
   if ( !maybe_tokens ) {
@@ -20,18 +22,19 @@ MaybeAction Parser::parse_action( std::string_view line ) const {
 
   const Tokens & tokens = maybe_tokens.value();
 
-  auto [command, depth] = find_matching_command( tokens );
+  auto [command, depth] =
+    find_matching_command( tokens, _command_registry.get_global_commands() );
 
-  if ( command == nullptr || command->is_phony ) {
+  if ( command == nullptr || !command->type.has_value() ) {
     return std::nullopt;
   }
 
   if ( tokens.size() == depth && command->arg_types.size() == 0 ) {
-    return Action( {
-      .command_type = command->type,
+    return Action{
+      .command_type = command->type.value(),
       .args = {},
-      .is_global = command->is_global,
-    } );
+      .is_global = true,
+    };
   }
 
   MaybeCommandArgs maybe_args = parse_args(
@@ -41,9 +44,49 @@ MaybeAction Parser::parse_action( std::string_view line ) const {
     return std::nullopt;
   }
 
-  return Action( { .command_type = command->type,
-                   .args = maybe_args.value(),
-                   .is_global = command->is_global } );
+  return Action{
+    .command_type = command->type.value(),
+    .args = maybe_args.value(),
+    .is_global = true,
+  };
+}
+
+MaybeAction Parser::parse_mode_action( std::string_view line,
+                                       AppMode mode ) const {
+  MaybeTokens maybe_tokens = tokenize( line );
+
+  if ( !maybe_tokens ) {
+    IO::print_error( "Parsing tokens failed" );
+    return std::nullopt;
+  }
+
+  const Tokens & tokens = maybe_tokens.value();
+
+  auto [command, depth] = find_matching_command(
+    tokens, _command_registry.get_mode_commands_for( mode ) );
+
+  if ( command == nullptr || !command->type.has_value() ) {
+    return std::nullopt;
+  }
+
+  if ( tokens.size() == depth && command->arg_types.size() == 0 ) {
+    return Action{
+      .command_type = command->type.value(),
+      .args = {},
+    };
+  }
+
+  MaybeCommandArgs maybe_args = parse_args(
+    command->arg_types, tokens.cbegin() + (int)depth, tokens.cend() );
+
+  if ( !maybe_args.has_value() ) {
+    return std::nullopt;
+  }
+
+  return Action{
+    .command_type = command->type.value(),
+    .args = maybe_args.value(),
+  };
 }
 
 MaybeTokens Parser::tokenize( std::string_view s ) const {
@@ -104,24 +147,25 @@ Parser::split_str( std::string_view string,
 }
 
 std::pair<const Command *, std::size_t>
-Parser::find_matching_command( const Tokens & tokens ) const {
-  const Commands * commands = &_command_registry.get_commands();
+Parser::find_matching_command( const Tokens & tokens,
+                               const Commands & commands ) const {
+  const Commands * commands_ptr = &commands;
   const Command * found = nullptr; // deepest found command
   std::size_t depth = 0;
 
-  for ( std::string_view token : tokens ) {
-    if ( commands->is_empty() ) {
-      return { found, depth };
-    }
+  if ( commands_ptr->is_empty() ) {
+    return { found, depth };
+  }
 
-    const Command * command = commands->get( token );
+  for ( std::string_view token : tokens ) {
+    const Command * command = commands_ptr->get( token );
 
     if ( command == nullptr ) {
       return { found, depth };
     }
 
     found = command;
-    commands = &command->subcommands;
+    commands_ptr = &command->subcommands;
     depth++;
   }
 

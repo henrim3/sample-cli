@@ -36,6 +36,12 @@ std::string CommandArg::to_string() const {
          "\n  value: " + value_str;
 }
 
+Commands::Commands( const std::vector<Command> & commands ) {
+  for ( const Command & command : commands ) {
+    _commands.insert_or_assign( command.token, command );
+  }
+}
+
 Commands::Commands( std::initializer_list<Command> commands ) {
   for ( const Command & command : commands ) {
     _commands.insert_or_assign( command.token, command );
@@ -52,6 +58,12 @@ const Command * Commands::get( std::string_view token ) const {
 
 void Commands::add( const Command & command ) {
   _commands.insert_or_assign( command.token, command );
+}
+
+void Commands::add( const Commands & commands ) {
+  for ( const auto & command_entry : commands._commands ) {
+    _commands[command_entry.second.token] = command_entry.second;
+  }
 }
 
 bool Commands::is_empty() const {

@@ -1,9 +1,10 @@
-#include "SampleMode.h"
+#include "SampleModeEventHandler.h"
 #include "IO.h"
 #include "ModeResponse.h"
 #include "TypeDefs.h"
 
-ModeResponse SampleMode::handle_key( Key key, AppContext & context ) {
+ModeResponse SampleModeEventHandler::handle_key( Key key,
+                                                 AppContext & context ) const {
   (void)context;
   if ( !key.special_type.has_value() ) {
     return ModeResponse{};
@@ -18,12 +19,13 @@ ModeResponse SampleMode::handle_key( Key key, AppContext & context ) {
 #pragma GCC diagnostic pop
 }
 
-ModeResponse SampleMode::handle_action( const Action & action,
-                                        AppContext & context ) {
+ModeResponse
+SampleModeEventHandler::handle_action( const Action & action,
+                                       AppContext & context ) const {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wswitch-enum"
-  switch ( action.get_command_type() ) {
-    case CommandType::Play: {
+  switch ( action.command_type ) {
+    case CommandType::PlaySample: {
       MaybeSizeT maybe_sample_id = context.state.selected_sample_id;
 
       if ( !maybe_sample_id.has_value() ) {
@@ -46,7 +48,7 @@ ModeResponse SampleMode::handle_action( const Action & action,
     }
 
     default:
-      IO::println( "Command not supported in current mode" );
+      IO::println( "Command not supported in Sample mode" );
       return ModeResponse{};
   }
 #pragma GCC diagnostic pop

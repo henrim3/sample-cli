@@ -1,27 +1,28 @@
-#include "DefaultActionHandler.h"
-#include "AppContext.h"
-#include "AppModeType.h"
-#include "HistoryManager.h"
+#include "GlobalEventHandler.h"
 #include "IO.h"
-#include "ModeResponse.h"
-#include "SampleManager.h"
 
-ModeResponse DefaultActionHandler::handle_action( const Action & action,
-                                                  AppContext & context ) {
+ModeResponse GlobalEventHandler::handle_action( const Action & action,
+                                                AppContext & context ) const {
   SampleManager & sample_manager = context.services.sample_manager;
   VoiceManager & voice_manager = context.services.voice_manager;
   HistoryManager & history_manager = context.state.history_manager;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wswitch-enum"
-  switch ( action.get_command_type() ) {
+  switch ( action.command_type ) {
     case CommandType::Quit:
       return ModeResponse{ .loop_should = LoopBehavior::Stop };
 
-    case CommandType::Deselect:
-      return ModeResponse{ .switch_to_mode = AppModeType::Project };
+    case CommandType::Deselect: {
+      switch ( context.state.mode ) {
+        case AppMode::Main:
+          return ModeResponse{ .switch_to_mode = AppMode::Main };
+        default:
+          return ModeResponse{ .switch_to_mode = AppMode::Project };
+      }
+    }
 
-    case CommandType::History: {
+    case CommandType::ShowHistory: {
       const std::vector<std::string> & entries = history_manager.get_entries();
       IO::println( "History:" );
       std::size_t start_idx = static_cast<std::size_t>(
@@ -32,7 +33,7 @@ ModeResponse DefaultActionHandler::handle_action( const Action & action,
       return ModeResponse{};
     }
 
-    case CommandType::FullHistory: {
+    case CommandType::ShowFullHistory: {
       const std::vector<std::string> & entries = history_manager.get_entries();
       for ( std::size_t i = 0; i < entries.size(); i++ ) {
         IO::println( "  ", i, ": ", entries[i] );
@@ -60,7 +61,7 @@ ModeResponse DefaultActionHandler::handle_action( const Action & action,
         return ModeResponse{};
       }
       context.state.selected_sample_id = id;
-      return ModeResponse{ .switch_to_mode = AppModeType::Sample };
+      return ModeResponse{ .switch_to_mode = AppMode::Sample };
     }
 
     case CommandType::StopAll:

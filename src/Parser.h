@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Action.h"
+#include "AppMode.h"
 #include "Command.h"
 #include "CommandRegistry.h"
 #include <optional>
@@ -13,7 +14,8 @@ class Parser {
 public:
   Parser( const CommandRegistry & command_registry );
 
-  MaybeAction parse_action( std::string_view line ) const;
+  MaybeAction parse_global_action( std::string_view line ) const;
+  MaybeAction parse_mode_action( std::string_view line, AppMode mode ) const;
 
 private:
   const CommandRegistry & _command_registry;
@@ -24,7 +26,8 @@ private:
                          const std::unordered_set<char> & delimiters ) const;
 
   std::pair<const Command *, std::size_t>
-  find_matching_command( const Tokens & tokens ) const;
+  find_matching_command( const Tokens & tokens,
+                         const Commands & commands ) const;
 
   MaybeCommandArg validate_arg( std::string_view token,
                                 CommandArgType expected_type ) const;

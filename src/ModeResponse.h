@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Action.h"
-#include "AppModeType.h"
+#include "AppMode.h"
 #include <optional>
 
 enum class LoopBehavior {

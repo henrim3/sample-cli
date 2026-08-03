@@ -13,29 +13,28 @@ using CommandArgValue = std::variant<std::string, std::size_t, int>;
 enum class CommandType {
   Deselect,
 
-  // History
-  History,
-  FullHistory,
+  Details,
 
-  // List
-  List,
-  ListSamples,
+  // History
+  ShowHistory,
+  ShowFullHistory,
+
   Quit,
 
-  // New
-  New,
+  // Samples
+  ListSamples,
   NewSample,
-  Play,
-
-  // Select
-  Select,
-  SelectPad,
+  PlaySample,
   SelectSample,
+  StopSample,
 
-  // Stop
-  Stop,
+  // Pads
+  SelectPad,
+
   StopAll,
 };
+
+using MaybeCommandType = std::optional<CommandType>;
 
 enum class CommandArgType {
   String,
@@ -72,22 +71,23 @@ struct Command;
 
 class Commands {
 public:
+  Commands( const std::vector<Command> & commands );
   Commands( std::initializer_list<Command> commands );
 
   const Command * get( std::string_view token ) const;
+
   void add( const Command & command );
+  void add( const Commands & commands );
 
   bool is_empty() const;
 
 private:
-  std::unordered_map<std::string, Command> _commands;
+  std::unordered_map<std::string, Command> _commands = {};
 };
 
 struct Command {
   std::string token;
-  CommandType type;
-  bool is_phony = false;
-  bool is_global = false;
+  MaybeCommandType type = std::nullopt;
   std::vector<CommandArgType> arg_types = {};
   Commands subcommands = {};
 };
