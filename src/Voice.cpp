@@ -1,9 +1,33 @@
 #include "Voice.h"
 
 #include "Sample.h"
+#include <optional>
 
-std::size_t Voice::get_pad_id() const {
+Voice::Voice( std::size_t id ) : _id( id ) {}
+
+std::size_t Voice::get_id() const {
+  return _id;
+}
+
+MaybeSizeT Voice::get_sample_id() const {
+  if ( _sample == nullptr ) {
+    return std::nullopt;
+  }
+  return _sample->get_id();
+}
+
+MaybeSizeT Voice::get_pad_id() const {
   return _pad_id;
+}
+
+bool Voice::is_active() const {
+  return _is_active;
+}
+
+void Voice::start( const Sample & sample ) {
+  _sample = &sample;
+  _position = 0;
+  _is_active = true;
 }
 
 void Voice::start( std::size_t pad_id, const Sample & sample ) {
@@ -46,8 +70,4 @@ void Voice::render( juce::AudioBuffer<float> & output, int start_sample,
 void Voice::stop() {
   _sample = nullptr;
   _is_active = false;
-}
-
-bool Voice::is_active() const {
-  return _is_active;
 }

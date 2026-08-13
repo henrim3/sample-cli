@@ -22,28 +22,30 @@ ModeResponse SampleModeEventHandler::handle_key( Key key,
 ModeResponse
 SampleModeEventHandler::handle_action( const Action & action,
                                        AppContext & context ) const {
+  VoiceManager & voice_manager = context.services.voice_manager;
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wswitch-enum"
   switch ( action.command_type ) {
     case CommandType::PlaySample: {
-      MaybeSizeT maybe_sample_id = context.state.selected_sample_id;
+      const Sample * sample = context.get_selected_sample();
 
-      if ( !maybe_sample_id.has_value() ) {
-        IO::print_error(
-          "No sample selected, use 'list samples' to list available samples" );
+      if ( sample == nullptr ) {
+        IO::print_error( "Current sample doesn't exist" );
+      } else {
+        context.services.voice_manager.create_voice_for_sample( *sample );
+      }
+      return ModeResponse{};
+    }
+
+    case CommandType::StopSample: {
+      const Sample * sample = context.get_selected_sample();
+      if ( sample == nullptr ) {
+        IO::print_error( "Current sample doesn't exist" );
         return ModeResponse{};
       }
 
-      std::size_t sample_id = maybe_sample_id.value();
-
-      Sample * sample =
-        context.services.sample_manager.get_sample_by_id( sample_id );
-
-      if ( sample == nullptr ) {
-        IO::print_error( "Sample ", sample_id, " doesn't exist" );
-      } else {
-        context.services.voice_manager.create_voice( 0, *sample );
-      }
+      voice_manager.stop_voices_for_sample( sample->get_id() );
       return ModeResponse{};
     }
 
