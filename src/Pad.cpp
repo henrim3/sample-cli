@@ -7,3 +7,7 @@ void Pad::set_sample( const Sample * sample ) {
 }
 
 void Pad::trigger() const {}
+
+std::size_t Pad::get_id() const {
+  return _id;
+}

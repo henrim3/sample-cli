@@ -41,19 +41,6 @@ ModeResponse GlobalEventHandler::handle_action( const Action & action,
       return ModeResponse{};
     }
 
-    case CommandType::ListSamples: {
-      IO::println( "Samples:" );
-      auto samples = sample_manager.get_samples();
-      if ( samples.empty() ) {
-        IO::println( "  No samples loaded" );
-        return ModeResponse{};
-      }
-      for ( const auto & [key, value] : samples ) {
-        IO::println( "  ", key, ": ", value.get_file_path() );
-      }
-      return ModeResponse{};
-    }
-
     case CommandType::SelectSample: {
       std::size_t id = action.get_arg<std::size_t>( 0 );
       if ( !sample_manager.has_sample( id ) ) {

@@ -29,6 +29,8 @@ enum class CommandType {
   StopSample,
 
   // Pads
+  AssignSample,
+  NewPad,
   SelectPad,
 
   StopAll,

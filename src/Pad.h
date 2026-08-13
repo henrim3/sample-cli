@@ -13,6 +13,8 @@ public:
   void set_sample( const Sample * sample );
   void trigger() const;
 
+  std::size_t get_id() const;
+
 private:
   std::size_t _id;
   const Sample * _sample;

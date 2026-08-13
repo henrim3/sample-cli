@@ -3,7 +3,7 @@
 
 Pad & PadManager::create_pad() {
   std::size_t id = _next_id++;
-  _pads.insert( { id, Pad( id ) } );
+  _pads.emplace( id, Pad( id ) );
   return _pads.at( id );
 }
 

@@ -4,6 +4,7 @@
 enum class AppMode {
   Main,
   Project,
+  Pad,
   Sample,
 };
 

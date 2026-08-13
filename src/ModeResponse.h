@@ -7,7 +7,6 @@
 enum class LoopBehavior {
   // in order of severity
   KeepGoing,
-  KeepGoingNoPrompt,
   Stop,
   Error,
 };

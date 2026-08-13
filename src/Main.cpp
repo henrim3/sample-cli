@@ -7,6 +7,7 @@
 #include "HistoryManager.h"
 #include "IO.h"
 #include "LineEditor.h"
+#include "PadModeEventHandler.h"
 #include "Parser.h"
 #include "ProjectModeEventHandler.h"
 #include "SampleModeEventHandler.h"
@@ -39,6 +40,10 @@ int main() {
           .subcommands =
             {
               {
+                .token = "pad",
+                .type = CommandType::NewPad,
+              },
+              {
                 .token = "sample",
                 .type = CommandType::NewSample,
                 .arg_types =
@@ -68,6 +73,19 @@ int main() {
                     CommandArgType::SizeT,
                   },
               },
+            },
+        },
+      },
+    },
+    {
+      AppMode::Pad,
+      {
+        {
+          .token = "assign",
+          .type = CommandType::AssignSample,
+          .arg_types =
+            {
+              CommandArgType::SizeT,
             },
         },
       },
@@ -143,7 +161,6 @@ int main() {
   HistoryManager history_manager;
 
   AppState state{ .mode = AppMode::Project,
-                  .selected_sample_id = std::nullopt,
                   .line_editor = line_editor,
                   .history_manager = history_manager };
 
@@ -156,6 +173,7 @@ int main() {
   DefaultEventHandler default_event_handler( parser );
   GlobalEventHandler global_event_handler;
   ProjectModeEventHandler project_mode_event_handler;
+  PadModeEventHandler pad_mode_event_handler;
   SampleModeEventHandler sample_mode_event_handler;
 
   EventHandlerRegistry event_handler_registry;
@@ -164,6 +182,8 @@ int main() {
   event_handler_registry.register_global_event_handler( global_event_handler );
   event_handler_registry.register_event_handler_for(
     AppMode::Project, project_mode_event_handler );
+  event_handler_registry.register_event_handler_for( AppMode::Pad,
+                                                     pad_mode_event_handler );
   event_handler_registry.register_event_handler_for(
     AppMode::Sample, sample_mode_event_handler );
 

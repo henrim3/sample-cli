@@ -82,18 +82,32 @@ std::string App::make_prompt() const {
   switch ( _context.state.mode ) {
     case AppMode::Main:
       prompt += "[main]";
+      break;
+
     case AppMode::Project:
       prompt += "[project NAME]";
       break;
+
+    case AppMode::Pad: {
+      prompt += "[pad ";
+      MaybeSizeT pad_id = _context.state.selected_pad_id;
+      if ( pad_id.has_value() ) {
+        prompt += std::to_string( pad_id.value() ) + "]";
+      } else {
+        prompt += "NONE]";
+      }
+      break;
+    }
+
     case AppMode::Sample: {
       prompt += "[sample ";
-
       MaybeSizeT sample_id = _context.state.selected_sample_id;
       if ( sample_id.has_value() ) {
         prompt += std::to_string( sample_id.value() ) + "]";
       } else {
         prompt += "NONE]";
       }
+      break;
     }
   }
 
