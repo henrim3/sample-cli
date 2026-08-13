@@ -1,122 +1,145 @@
-#include "AppModeType.h"
+#include "AppMode.h"
 #include "Command.h"
 #include "CommandLoop.h"
 #include "CommandRegistry.h"
-#include "DefaultActionHandler.h"
-#include "DefaultKeyHandler.h"
+#include "EventHandlerRegistry.h"
+#include "GlobalEventHandler.h"
 #include "HistoryManager.h"
 #include "IO.h"
 #include "LineEditor.h"
+#include "PadModeEventHandler.h"
 #include "Parser.h"
+#include "ProjectModeEventHandler.h"
+#include "SampleModeEventHandler.h"
 #include <optional>
 
 int main() {
   IO::init();
 
+  // register commands for each mode
   CommandRegistry command_registry{
     {
-      .token = "deselect",
-      .type = CommandType::Deselect,
-      .is_global = true,
+      AppMode::Main,
+      {},
     },
     {
-      .token = "exit",
-      .type = CommandType::Quit,
-      .is_global = true,
-    },
-    {
-      .token = "history",
-      .type = CommandType::History,
-      .is_global = true,
-      .subcommands =
+      AppMode::Project,
+      {
         {
-          {
-            .token = "full",
-            .type = CommandType::FullHistory,
-            .is_global = true,
-          },
-        },
-    },
-    {
-      .token = "list",
-      .type = CommandType::List,
-      .is_phony = true,
-      .subcommands =
-        {
-          {
-            .token = "samples",
-            .type = CommandType::ListSamples,
-            .is_global = true,
-          },
-        },
-    },
-    {
-      .token = "new",
-      .type = CommandType::New,
-      .is_phony = true,
-      .subcommands =
-        {
-          {
-            .token = "pad",
-            .type = CommandType::NewPad,
-          },
-          {
-            .token = "sample",
-            .type = CommandType::NewSample,
-            .arg_types =
+          .token = "list",
+          .subcommands =
+            {
               {
-                CommandArgType::String,
+                .token = "samples",
+                .type = CommandType::ListSamples,
               },
-          },
+            },
         },
-    },
-    {
-      .token = "play",
-      .type = CommandType::Play,
-    },
-    {
-      .token = "quit",
-      .type = CommandType::Quit,
-      .is_global = true,
-    },
-    {
-      .token = "select",
-      .type = CommandType::Select,
-      .is_phony = true,
-      .subcommands =
         {
-          {
-            .token = "pad",
-            .type = CommandType::SelectPad,
-            .arg_types =
+          .token = "new",
+          .subcommands =
+            {
               {
-                CommandArgType::SizeT,
+                .token = "pad",
+                .type = CommandType::NewPad,
               },
-          },
-          {
-            .token = "sample",
-            .type = CommandType::SelectSample,
-            .arg_types =
               {
-                CommandArgType::SizeT,
+                .token = "sample",
+                .type = CommandType::NewSample,
+                .arg_types =
+                  {
+                    CommandArgType::String,
+                  },
               },
-          },
+            },
         },
+        {
+          .token = "select",
+          .subcommands =
+            {
+              {
+                .token = "pad",
+                .type = CommandType::SelectPad,
+                .arg_types =
+                  {
+                    CommandArgType::SizeT,
+                  },
+              },
+              {
+                .token = "sample",
+                .type = CommandType::SelectSample,
+                .arg_types =
+                  {
+                    CommandArgType::SizeT,
+                  },
+              },
+            },
+        },
+      },
     },
     {
-      .token = "stop",
-      .type = CommandType::Stop,
-      .is_phony = true,
-      .subcommands =
+      AppMode::Pad,
+      {
         {
-          {
-            .token = "all",
-            .type = CommandType::StopAll,
-            .is_global = true,
-          },
+          .token = "assign",
+          .type = CommandType::AssignSample,
+          .arg_types =
+            {
+              CommandArgType::SizeT,
+            },
         },
+      },
+    },
+    {
+      AppMode::Sample,
+      {
+        {
+          .token = "play",
+          .type = CommandType::PlaySample,
+        },
+        {
+          .token = "stop",
+          .type = CommandType::StopSample,
+        },
+      },
     },
   };
+
+  // register global commands (work in any mode)
+  command_registry.register_global_commands( {
+    {
+      {
+        .token = "deselect",
+        .type = CommandType::Deselect,
+      },
+      {
+        .token = "exit",
+        .type = CommandType::Quit,
+      },
+      {
+        .token = "history",
+        .type = CommandType::ShowHistory,
+        .subcommands =
+          {
+            {
+              .token = "full",
+              .type = CommandType::ShowFullHistory,
+            },
+          },
+      },
+      {
+        .token = "quit",
+        .type = CommandType::Quit,
+      },
+      {
+        .token = "stop",
+        .subcommands = { {
+          .token = "all",
+          .type = CommandType::StopAll,
+        } },
+      },
+    },
+  } );
 
   Parser parser( command_registry );
 
@@ -137,8 +160,7 @@ int main() {
   LineEditor line_editor;
   HistoryManager history_manager;
 
-  AppState state{ .mode = AppModeType::Project,
-                  .selected_sample_id = std::nullopt,
+  AppState state{ .mode = AppMode::Project,
                   .line_editor = line_editor,
                   .history_manager = history_manager };
 
@@ -147,10 +169,25 @@ int main() {
     .state = state,
   };
 
-  DefaultKeyHandler default_key_handler( parser );
-  DefaultActionHandler default_action_handler;
+  // init event handlers
+  DefaultEventHandler default_event_handler( parser );
+  GlobalEventHandler global_event_handler;
+  ProjectModeEventHandler project_mode_event_handler;
+  PadModeEventHandler pad_mode_event_handler;
+  SampleModeEventHandler sample_mode_event_handler;
 
-  App app( context, default_key_handler, default_action_handler );
+  EventHandlerRegistry event_handler_registry;
+
+  // register event handlers
+  event_handler_registry.register_global_event_handler( global_event_handler );
+  event_handler_registry.register_event_handler_for(
+    AppMode::Project, project_mode_event_handler );
+  event_handler_registry.register_event_handler_for( AppMode::Pad,
+                                                     pad_mode_event_handler );
+  event_handler_registry.register_event_handler_for(
+    AppMode::Sample, sample_mode_event_handler );
+
+  App app( context, default_event_handler, event_handler_registry );
   CommandLoop command_loop( app, parser );
 
   command_loop.run();

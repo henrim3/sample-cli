@@ -2,16 +2,15 @@
 
 #include "Action.h"
 #include "AppContext.h"
-#include "AppMode.h"
-#include "DefaultActionHandler.h"
-#include "DefaultKeyHandler.h"
+#include "DefaultEventHandler.h"
+#include "EventHandlerRegistry.h"
 #include "ModeResponse.h"
 #include <ostream>
 
 class App {
 public:
-  App( AppContext & context, const DefaultKeyHandler & default_key_handler,
-       const DefaultActionHandler & default_action_handler );
+  App( AppContext & context, const DefaultEventHandler & default_event_handler,
+       const EventHandlerRegistry & event_handler_registry );
 
   LoopBehavior handle_key( Key key );
   LoopBehavior handle_action( const Action & action );
@@ -23,12 +22,9 @@ public:
   friend std::ostream & operator<<( std::ostream & os, const App & a );
 
 private:
-  DefaultKeyHandler _default_key_handler;
-  DefaultActionHandler _default_action_handler;
-
   AppContext _context;
-  std::unique_ptr<IAppMode> _mode;
+  const DefaultEventHandler & _default_event_handler;
+  const EventHandlerRegistry & _event_handler_registry;
 
-  void handle_mode_change( AppModeType mode_type );
   std::string make_prompt() const;
 };

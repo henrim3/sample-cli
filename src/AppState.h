@@ -1,14 +1,14 @@
 #pragma once
 
-#include "AppModeType.h"
+#include "AppMode.h"
 #include "HistoryManager.h"
 #include "LineEditor.h"
 #include "TypeDefs.h"
-#include <optional>
 
 struct AppState {
-  AppModeType mode;
-  MaybeSizeT selected_sample_id;
+  AppMode mode;
+  MaybeSizeT selected_sample_id = std::nullopt;
+  MaybeSizeT selected_pad_id = std::nullopt;
   bool is_history_active = false;
   MaybeString cached_input = std::nullopt;
   LineEditor & line_editor;

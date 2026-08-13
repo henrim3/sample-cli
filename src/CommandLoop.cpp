@@ -16,15 +16,13 @@ void CommandLoop::run() {
     _app.render();
 
     switch ( result ) {
-      case LoopBehavior::Error:
-        IO::print_error( "Exiting on error!!" );
-        return;
+      case LoopBehavior::KeepGoing:
+        break;
       case LoopBehavior::Stop:
         IO::println( "Exiting..." );
         return;
-      case LoopBehavior::KeepGoing:
-        break;
-      case LoopBehavior::KeepGoingNoPrompt:
+      case LoopBehavior::Error:
+        IO::print_error( "Exiting on error!!" );
         return;
     }
   }

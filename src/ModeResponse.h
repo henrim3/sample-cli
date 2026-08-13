@@ -1,13 +1,12 @@
 #pragma once
 
 #include "Action.h"
-#include "AppModeType.h"
+#include "AppMode.h"
 #include <optional>
 
 enum class LoopBehavior {
   // in order of severity
   KeepGoing,
-  KeepGoingNoPrompt,
   Stop,
   Error,
 };
