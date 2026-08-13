@@ -1,11 +1,14 @@
 #include "PadModeEventHandler.h"
 #include "IO.h"
+#include "ModeResponse.h"
 #include "SampleManager.h"
+#include "VoiceManager.h"
 #include <cstddef>
 
 ModeResponse PadModeEventHandler::handle_action( const Action & action,
                                                  AppContext & context ) const {
   SampleManager & sample_manager = context.services.sample_manager;
+  VoiceManager & voice_manager = context.services.voice_manager;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wswitch-enum"
   switch ( action.command_type ) {
@@ -29,6 +32,24 @@ ModeResponse PadModeEventHandler::handle_action( const Action & action,
 
       IO::println( "Assigned sample ", sample_id, " to pad ", pad_id );
 
+      return ModeResponse{};
+    }
+
+    case CommandType::PlayPad: {
+      const Pad * pad = context.get_selected_pad();
+
+      if ( pad == nullptr ) {
+        IO::print_error( "Current pad doesn't exist" );
+      }
+
+      voice_manager.create_voice_for_pad( *pad );
+
+      return ModeResponse{};
+    }
+
+    case CommandType::StopPad: {
+      const Pad * pad = context.get_selected_pad();
+      voice_manager.stop_voices_for_pad( pad->get_id() );
       return ModeResponse{};
     }
 

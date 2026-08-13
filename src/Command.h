@@ -31,7 +31,9 @@ enum class CommandType {
   // Pads
   AssignSample,
   NewPad,
+  PlayPad,
   SelectPad,
+  StopPad,
 
   StopAll,
 };

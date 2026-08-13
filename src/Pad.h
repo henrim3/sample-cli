@@ -14,6 +14,7 @@ public:
   void trigger() const;
 
   std::size_t get_id() const;
+  const Sample * get_sample() const;
 
 private:
   std::size_t _id;

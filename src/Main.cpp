@@ -11,7 +11,6 @@
 #include "Parser.h"
 #include "ProjectModeEventHandler.h"
 #include "SampleModeEventHandler.h"
-#include <optional>
 
 int main() {
   IO::init();
@@ -82,11 +81,25 @@ int main() {
       {
         {
           .token = "assign",
-          .type = CommandType::AssignSample,
-          .arg_types =
+          .subcommands =
             {
-              CommandArgType::SizeT,
+              {
+                .token = "sample",
+                .type = CommandType::AssignSample,
+                .arg_types =
+                  {
+                    CommandArgType::SizeT,
+                  },
+              },
             },
+        },
+        {
+          .token = "play",
+          .type = CommandType::PlayPad,
+        },
+        {
+          .token = "stop",
+          .type = CommandType::StopPad,
         },
       },
     },

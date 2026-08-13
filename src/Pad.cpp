@@ -11,3 +11,7 @@ void Pad::trigger() const {}
 std::size_t Pad::get_id() const {
   return _id;
 }
+
+const Sample * Pad::get_sample() const {
+  return _sample;
+}
