@@ -12,6 +12,7 @@ public:
 
   bool move_left();
   bool move_right();
+  void move_to_end();
 
   void set_text( std::string_view s );
   std::string_view get_text() const;

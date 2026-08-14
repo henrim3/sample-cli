@@ -45,6 +45,10 @@ bool LineEditor::move_right() {
   return true;
 }
 
+void LineEditor::move_to_end() {
+  _cursor_pos = _buffer.size();
+}
+
 void LineEditor::set_text( std::string_view s ) {
   _buffer = std::string( s );
 }

@@ -8,7 +8,7 @@ enum class LoopBehavior {
   // in order of severity
   KeepGoing,
   Stop,
-  Error,
+  StopOnError,
 };
 
 struct ModeResponse {

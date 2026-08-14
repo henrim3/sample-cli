@@ -56,7 +56,6 @@ public:
 
 private:
   static termios _oldt;
-  static std::size_t _cursor_pos;
 
   static Key get_escape_or_arrow_key();
 };

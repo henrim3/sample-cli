@@ -6,6 +6,7 @@
 #include "EventHandlerRegistry.h"
 #include "IO.h"
 #include "SampleModeEventHandler.h"
+#include <algorithm>
 
 App::App( AppContext & context,
           const DefaultEventHandler & default_event_handler,
@@ -34,6 +35,8 @@ LoopBehavior App::handle_key( Key key ) {
     if ( res_from_default.parsed_action.has_value() ) {
       return handle_action( res_from_default.parsed_action.value() );
     }
+
+    return std::max( res.loop_should, res_from_default.loop_should );
   }
 
   return res.loop_should;
