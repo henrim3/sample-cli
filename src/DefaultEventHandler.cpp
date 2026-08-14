@@ -1,5 +1,6 @@
 #include "DefaultEventHandler.h"
 #include "IO.h"
+#include "ModeResponse.h"
 
 DefaultEventHandler::DefaultEventHandler( const Parser & parser )
     : _parser( parser ) {}
@@ -34,6 +35,7 @@ ModeResponse DefaultEventHandler::handle_key( Key key,
         context.state.cached_input = std::nullopt;
       }
 
+      line_editor.move_to_end();
       return ModeResponse{};
     }
 
@@ -53,7 +55,9 @@ ModeResponse DefaultEventHandler::handle_key( Key key,
           context.state.is_history_active = true;
           context.state.cached_input = line_editor.get_text();
         }
+
         line_editor.set_text( prev_command.value() );
+        line_editor.move_to_end();
       }
 
       return ModeResponse{};
@@ -91,19 +95,6 @@ ModeResponse DefaultEventHandler::handle_key( Key key,
       return ModeResponse{ .parsed_action = mode_action.value() };
     }
 
-    default:
-      return ModeResponse{};
-  }
-#pragma GCC diagnostic pop
-}
-
-ModeResponse DefaultEventHandler::handle_action( const Action & action,
-                                                 AppContext & context ) const {
-
-  (void)context; // unused for now
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch-enum"
-  switch ( action.command_type ) {
     default:
       return ModeResponse{};
   }

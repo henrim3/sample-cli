@@ -6,7 +6,6 @@
 #include <unistd.h>
 
 termios IO::_oldt{};
-std::size_t IO::_cursor_pos = 0;
 
 void IO::init() {
   // https://stackoverflow.com/questions/6698161/getting-raw-input-from-console-using-c-or-c
@@ -63,7 +62,7 @@ void IO::render( std::string_view prompt, const LineEditor & editor ) {
 
   // to cursor
   for ( std::size_t i = 0; i < prompt.size() + editor.get_cursor_pos(); i++ ) {
-    print_no_flush( "\x1b[C" );
+    print_no_flush( "\x1b[C" ); // move right
   }
 
   flush_output();
