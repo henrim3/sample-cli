@@ -8,9 +8,6 @@ SampleManager::SampleManager( FormatManager & format_manager )
     : _format_manager( format_manager ) {}
 
 Sample * SampleManager::load_sample( std::string_view file_path ) {
-  std::size_t id = _next_id++;
-  Sample sample( id );
-
   juce::File file(( std::string( file_path ) ));
 
   if ( !file.existsAsFile() ) {
@@ -25,6 +22,9 @@ Sample * SampleManager::load_sample( std::string_view file_path ) {
     IO::print_error( "No registered formats can open file ", file_path );
     return nullptr;
   }
+
+  std::size_t id = _next_id++;
+  Sample sample( id );
 
   sample._buffer.setSize( static_cast<int>( reader->numChannels ),
                           static_cast<int>( reader->lengthInSamples ) );

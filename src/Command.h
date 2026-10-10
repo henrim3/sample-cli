@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CommandType.h"
 #include <initializer_list>
 #include <optional>
 #include <string>
@@ -9,36 +10,6 @@
 #include <vector>
 
 using CommandArgValue = std::variant<std::string, std::size_t, int>;
-
-enum class CommandType {
-  Deselect,
-
-  Details,
-
-  // History
-  ShowHistory,
-  ShowFullHistory,
-
-  Quit,
-
-  // Samples
-  ListSamples,
-  NewSample,
-  PlaySample,
-  SelectSample,
-  StopSample,
-
-  // Pads
-  AssignSample,
-  NewPad,
-  PlayPad,
-  SelectPad,
-  StopPad,
-
-  StopAll,
-};
-
-using MaybeCommandType = std::optional<CommandType>;
 
 enum class CommandArgType {
   String,
