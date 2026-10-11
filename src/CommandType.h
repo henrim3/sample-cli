@@ -4,7 +4,7 @@
 enum class CommandType {
   Deselect,
 
-  Details,
+  ListCommands,
 
   // History
   ShowHistory,

@@ -2,10 +2,10 @@
 
 #include "CommandType.h"
 #include <initializer_list>
+#include <map>
 #include <optional>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 #include <variant>
 #include <vector>
 
@@ -56,8 +56,10 @@ public:
 
   bool is_empty() const;
 
+  const std::map<std::string, Command> & get_commands() const;
+
 private:
-  std::unordered_map<std::string, Command> _commands = {};
+  std::map<std::string, Command> _commands = {};
 };
 
 struct Command {

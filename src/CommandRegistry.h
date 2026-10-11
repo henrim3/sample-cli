@@ -2,6 +2,7 @@
 
 #include "AppMode.h"
 #include "Command.h"
+#include <unordered_map>
 
 using CommandsByMode = std::unordered_map<AppMode, Commands>;
 

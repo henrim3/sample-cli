@@ -1,5 +1,10 @@
 #include "GlobalEventHandler.h"
+#include "Command.h"
 #include "IO.h"
+
+GlobalEventHandler::GlobalEventHandler(
+  const CommandRegistry & commandRegistry )
+    : _commandRegistry( commandRegistry ) {}
 
 ModeResponse GlobalEventHandler::handle_action( const Action & action,
                                                 AppContext & context ) const {
@@ -12,6 +17,20 @@ ModeResponse GlobalEventHandler::handle_action( const Action & action,
   switch ( action.command_type ) {
     case CommandType::Quit:
       return ModeResponse{ .loop_should = LoopBehavior::Stop };
+
+    case CommandType::ListCommands: {
+      Commands global_commands = _commandRegistry.get_global_commands();
+      Commands mode_commands =
+        _commandRegistry.get_mode_commands_for( context.state.mode );
+
+      IO::println( "Global:" );
+      output_all_commands( global_commands, 2 );
+
+      IO::println( to_string( context.state.mode ), ":" );
+      output_all_commands( mode_commands, 2 );
+
+      return ModeResponse{};
+    }
 
     case CommandType::Deselect: {
       switch ( context.state.mode ) {
@@ -58,4 +77,19 @@ ModeResponse GlobalEventHandler::handle_action( const Action & action,
       return ModeResponse{};
   }
 #pragma GCC diagnostic pop
+}
+
+void GlobalEventHandler::output_all_commands( const Commands & commands,
+                                              std::size_t indent ) const {
+  if ( commands.is_empty() ) {
+    return;
+  }
+
+  const std::map<std::string, Command> & repr = commands.get_commands();
+
+  for ( const auto & [token, command] : repr ) {
+    IO::print_indent( indent );
+    IO::println( token );
+    output_all_commands( command.subcommands, indent + 2 );
+  }
 }
