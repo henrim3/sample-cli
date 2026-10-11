@@ -69,3 +69,8 @@ void Commands::add( const Commands & commands ) {
 bool Commands::is_empty() const {
   return _commands.size() == 0;
 }
+
+const std::map<std::string, Command> &
+Commands::get_commands() const {
+  return _commands;
+}

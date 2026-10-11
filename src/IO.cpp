@@ -72,6 +72,10 @@ void IO::print_newline() {
   std::cout << std::endl;
 }
 
+void IO::print_indent( std::size_t n ) {
+  print( std::string( n, ' ' ) );
+}
+
 void IO::flush_output() {
   std::cout << std::flush;
 }

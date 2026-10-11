@@ -52,6 +52,8 @@ public:
     std::cout << std::endl;
   }
 
+  static void print_indent( std::size_t n );
+
   static void flush_output();
 
 private:

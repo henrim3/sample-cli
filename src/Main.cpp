@@ -141,6 +141,16 @@ int main() {
           },
       },
       {
+        .token = "list",
+        .subcommands =
+          {
+            {
+              .token = "commands",
+              .type = CommandType::ListCommands,
+            },
+          },
+      },
+      {
         .token = "quit",
         .type = CommandType::Quit,
       },
@@ -184,7 +194,7 @@ int main() {
 
   // init event handlers
   DefaultEventHandler default_event_handler( parser );
-  GlobalEventHandler global_event_handler;
+  GlobalEventHandler global_event_handler( command_registry );
   ProjectModeEventHandler project_mode_event_handler;
   PadModeEventHandler pad_mode_event_handler;
   SampleModeEventHandler sample_mode_event_handler;
