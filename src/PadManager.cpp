@@ -14,3 +14,11 @@ Pad * PadManager::get_pad_by_id( std::size_t id ) {
     return nullptr;
   }
 }
+
+const Pad * PadManager::get_pad_by_id( std::size_t id ) const {
+  try {
+    return &_pads.at( id );
+  } catch ( std::out_of_range & ) {
+    return nullptr;
+  }
+}

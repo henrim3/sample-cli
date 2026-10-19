@@ -12,10 +12,12 @@ public:
   std::size_t get_id() const;
   MaybeSizeT get_sample_id() const;
   MaybeSizeT get_pad_id() const;
+  MaybeSizeT get_note_id() const;
   bool is_active() const;
 
   void start( const Sample & sample );
   void start( std::size_t pad_id, const Sample & sample );
+  void start_for_event( std::size_t event_id, const Sample & sample );
   void stop();
 
   void render( juce::AudioBuffer<float> & output, int start_sample,
@@ -24,6 +26,7 @@ public:
 private:
   std::size_t _id;
   MaybeSizeT _pad_id;
+  MaybeSizeT _note_id;
   const Sample * _sample = nullptr;
   int _position = 0;
   bool _is_active = false;

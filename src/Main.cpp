@@ -9,6 +9,7 @@
 #include "LineEditor.h"
 #include "PadModeEventHandler.h"
 #include "Parser.h"
+#include "PlaybackEngine.h"
 #include "ProjectModeEventHandler.h"
 #include "SampleModeEventHandler.h"
 
@@ -166,12 +167,13 @@ int main() {
 
   Parser parser( command_registry );
 
+  PadManager pad_manager;
   VoiceManager voice_manager;
-  AudioEngine audio_engine( voice_manager );
+  PlaybackEngine playback_engine( pad_manager, voice_manager );
+  AudioEngine audio_engine( playback_engine );
   DeviceManager device_manager( audio_engine );
   FormatManager format_manager;
   SampleManager sample_manager( format_manager );
-  PadManager pad_manager;
 
   AppServices services{ .voice_manager = voice_manager,
                         .sample_manager = sample_manager,

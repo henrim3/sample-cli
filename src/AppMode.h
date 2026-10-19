@@ -7,6 +7,7 @@ enum class AppMode {
   Project,
   Pad,
   Sample,
+  Sequence,
 };
 
 constexpr std::string_view to_string( AppMode mode ) {
@@ -19,6 +20,8 @@ constexpr std::string_view to_string( AppMode mode ) {
       return "Pad";
     case AppMode::Sample:
       return "Sample";
+    case AppMode::Sequence:
+      return "Sequence";
   }
 }
 

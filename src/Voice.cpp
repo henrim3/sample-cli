@@ -20,18 +20,33 @@ MaybeSizeT Voice::get_pad_id() const {
   return _pad_id;
 }
 
+MaybeSizeT Voice::get_note_id() const {
+  return _note_id;
+}
+
 bool Voice::is_active() const {
   return _is_active;
 }
 
 void Voice::start( const Sample & sample ) {
   _sample = &sample;
+  _pad_id = std::nullopt;
+  _note_id = std::nullopt;
   _position = 0;
   _is_active = true;
 }
 
 void Voice::start( std::size_t pad_id, const Sample & sample ) {
   _pad_id = pad_id;
+  _note_id = std::nullopt;
+  _sample = &sample;
+  _position = 0;
+  _is_active = true;
+}
+
+void Voice::start_for_event( std::size_t event_id, const Sample & sample ) {
+  _pad_id = std::nullopt;
+  _note_id = event_id;
   _sample = &sample;
   _position = 0;
   _is_active = true;
