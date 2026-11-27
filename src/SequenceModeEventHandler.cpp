@@ -14,8 +14,9 @@ SequenceModeEventHandler::handle_action( const Action & action,
       std::size_t pad_id = action.get_arg<std::size_t>( 0 );
       double start_beat = action.get_arg<double>( 1 );
       double duration = action.get_arg<double>( 2 );
+      bool one_shot = action.get_arg<bool>( 3 );
 
-      playback_engine.add_note( start_beat, duration, false, pad_id );
+      playback_engine.add_note( start_beat, duration, one_shot, pad_id );
 
       return ModeResponse{};
     }

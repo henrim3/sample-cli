@@ -138,6 +138,7 @@ int main() {
                     CommandArgType::SizeT,
                     CommandArgType::NonNegativeDouble,
                     CommandArgType::NonNegativeDouble,
+                    CommandArgType::Bool,
                   },
               },
             },
@@ -148,12 +149,13 @@ int main() {
         },
         {
           .token = "set",
-          .subcommands = {
+          .subcommands =
             {
-              .token = "length",
-              .type = CommandType::SetSequenceLength,
+              {
+                .token = "length",
+                .type = CommandType::SetSequenceLength,
+              },
             },
-          },
         },
         {
           .token = "stop",

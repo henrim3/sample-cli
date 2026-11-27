@@ -217,6 +217,18 @@ MaybeCommandArg Parser::validate_arg( std::string_view token,
       return CommandArg(
         { .type = CommandArgType::NonNegativeDouble, .value = d } );
     }
+
+    case CommandArgType::Bool: {
+      if ( token == "false" || token == "f" || token == "0" ) {
+        return CommandArg( { .type = CommandArgType::Bool, .value = false } );
+      }
+
+      if ( token == "true" || token == "t" || token == "1" ) {
+        return CommandArg( { .type = CommandArgType::Bool, .value = true } );
+      }
+
+      return std::nullopt;
+    }
   }
 }
 
@@ -242,7 +254,7 @@ MaybeCommandArgs Parser::parse_args( const CommandArgTypes & arg_types,
     MaybeCommandArg maybe_arg = validate_arg( *it, arg_types[i] );
 
     if ( !maybe_arg.has_value() ) {
-      IO::print_error( "Invalid argument " + std::to_string( i ) );
+      IO::print_error( "Invalid argument ", i );
       return std::nullopt;
     }
 

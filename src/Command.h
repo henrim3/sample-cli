@@ -9,13 +9,14 @@
 #include <variant>
 #include <vector>
 
-using CommandArgValue = std::variant<std::string, std::size_t, int, double>;
+using CommandArgValue = std::variant<std::string, std::size_t, int, double, bool>;
 
 enum class CommandArgType {
   String,
   SizeT,
   Int,
   NonNegativeDouble,
+  Bool,
 };
 
 using CommandArgTypes = std::vector<CommandArgType>;
