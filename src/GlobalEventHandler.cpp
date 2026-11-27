@@ -2,6 +2,7 @@
 #include "AppServices.h"
 #include "Command.h"
 #include "IO.h"
+#include <cstddef>
 
 GlobalEventHandler::GlobalEventHandler(
   const CommandRegistry & commandRegistry )
@@ -75,7 +76,7 @@ ModeResponse GlobalEventHandler::handle_action( const Action & action,
     case CommandType::StopAll:
       voice_manager.stop_all();
       playback_engine.stop();
-        return ModeResponse{};
+      return ModeResponse{};
 
     default:
       return ModeResponse{};
@@ -93,7 +94,17 @@ void GlobalEventHandler::output_all_commands( const Commands & commands,
 
   for ( const auto & [token, command] : repr ) {
     IO::print_indent( indent );
-    IO::println( token );
-    output_all_commands( command.subcommands, indent + 2 );
+    IO::print( token );
+
+    if ( command.subcommands.is_empty() ) {
+      for ( CommandArgType arg_type : command.arg_types ) {
+        IO::print( " <", command_arg_type_to_string( arg_type ), ">" );
+      }
+
+      IO::print_newline();
+    } else {
+      IO::print_newline();
+      output_all_commands( command.subcommands, indent + 2 );
+    }
   }
 }
