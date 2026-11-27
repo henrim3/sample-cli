@@ -85,6 +85,10 @@ ProjectModeEventHandler::handle_action( const Action & action,
       return ModeResponse{};
     }
 
+    case CommandType::SelectSequence:
+      context.state.mode = AppMode::Sequence;
+      return ModeResponse{};
+
     default:
       IO::println( "Command not supported in Project mode" );
       return ModeResponse{};

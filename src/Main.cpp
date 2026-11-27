@@ -12,6 +12,7 @@
 #include "PlaybackEngine.h"
 #include "ProjectModeEventHandler.h"
 #include "SampleModeEventHandler.h"
+#include "SequenceModeEventHandler.h"
 
 int main() {
   IO::init();
@@ -73,6 +74,10 @@ int main() {
                     CommandArgType::SizeT,
                   },
               },
+              {
+                .token = "sequence",
+                .type = CommandType::SelectSequence,
+              },
             },
         },
       },
@@ -114,6 +119,45 @@ int main() {
         {
           .token = "stop",
           .type = CommandType::StopSample,
+        },
+      },
+    },
+    {
+      AppMode::Sequence,
+      {
+        {
+          .token = "new",
+          .subcommands =
+            {
+              {
+                .token = "note",
+                .type = CommandType::NewNote,
+                // pad id, start, duration
+                .arg_types =
+                  {
+                    CommandArgType::SizeT,
+                    CommandArgType::NonNegativeDouble,
+                    CommandArgType::NonNegativeDouble,
+                  },
+              },
+            },
+        },
+        {
+          .token = "play",
+          .type = CommandType::PlaySequence,
+        },
+        {
+          .token = "set",
+          .subcommands = {
+            {
+              .token = "length",
+              .type = CommandType::SetSequenceLength,
+            },
+          },
+        },
+        {
+          .token = "stop",
+          .type = CommandType::StopSequence,
         },
       },
     },
@@ -180,7 +224,8 @@ int main() {
                         .pad_manager = pad_manager,
                         .audio_engine = audio_engine,
                         .device_manager = device_manager,
-                        .format_manager = format_manager };
+                        .format_manager = format_manager,
+                        .playback_engine = playback_engine };
 
   LineEditor line_editor;
   HistoryManager history_manager;
@@ -200,6 +245,7 @@ int main() {
   ProjectModeEventHandler project_mode_event_handler;
   PadModeEventHandler pad_mode_event_handler;
   SampleModeEventHandler sample_mode_event_handler;
+  SequenceModeEventHandler sequence_mode_event_handler;
 
   EventHandlerRegistry event_handler_registry;
 
@@ -211,6 +257,8 @@ int main() {
                                                      pad_mode_event_handler );
   event_handler_registry.register_event_handler_for(
     AppMode::Sample, sample_mode_event_handler );
+  event_handler_registry.register_event_handler_for(
+    AppMode::Sequence, sequence_mode_event_handler );
 
   App app( context, default_event_handler, event_handler_registry );
   CommandLoop command_loop( app, parser );

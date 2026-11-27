@@ -200,9 +200,24 @@ MaybeCommandArg Parser::validate_arg( std::string_view token,
       return CommandArg(
         { .type = CommandArgType::String, .value = std::string( token ) } );
     }
-  }
 
-  throw std::logic_error( "how" );
+    case CommandArgType::NonNegativeDouble: {
+      MaybeDouble md = StringConverter::try_parse_double( token );
+
+      if ( !md.has_value() ) {
+        return std::nullopt;
+      }
+
+      double d = md.value();
+
+      if ( d < 0 ) {
+        return std::nullopt;
+      }
+
+      return CommandArg(
+        { .type = CommandArgType::NonNegativeDouble, .value = d } );
+    }
+  }
 }
 
 MaybeCommandArgs Parser::parse_args( const CommandArgTypes & arg_types,
@@ -212,7 +227,7 @@ MaybeCommandArgs Parser::parse_args( const CommandArgTypes & arg_types,
   int n_args = end - begin;
 
   if ( expected_n_args != static_cast<std::size_t>( n_args ) ) {
-    IO::print_error( "Invalid number of aruguments (" +
+    IO::print_error( "Invalid number of arguments (" +
                      std::to_string( n_args ) + ") expected " +
                      std::to_string( expected_n_args ) );
     return std::nullopt;

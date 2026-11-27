@@ -4,6 +4,7 @@
 #include "DeviceManager.h"
 #include "FormatManager.h"
 #include "PadManager.h"
+#include "PlaybackEngine.h"
 #include "SampleManager.h"
 #include "VoiceManager.h"
 
@@ -14,4 +15,5 @@ struct AppServices {
   AudioEngine & audio_engine;
   DeviceManager & device_manager;
   FormatManager & format_manager;
+  PlaybackEngine & playback_engine;
 };
