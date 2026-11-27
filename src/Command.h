@@ -12,7 +12,7 @@
 using CommandArgValue =
   std::variant<std::string, std::size_t, int, double, bool>;
 
-enum class CommandArgType {
+enum class CommandParamType {
   String,
   SizeT,
   Int,
@@ -20,12 +20,20 @@ enum class CommandArgType {
   Bool,
 };
 
-std::string_view command_arg_type_to_string( CommandArgType command_arg_type );
+std::string
+command_param_type_to_string( CommandParamType command_arg_type );
 
-using CommandArgTypes = std::vector<CommandArgType>;
+using CommandParamTypes = std::vector<CommandParamType>;
+
+struct CommandParam {
+  std::string name;
+  CommandParamType type;
+};
+
+using CommandParams = std::vector<CommandParam>;
 
 struct InitializeCommandArgArgs {
-  CommandArgType type;
+  CommandParamType type;
   CommandArgValue value;
 };
 
@@ -33,13 +41,13 @@ class CommandArg {
 public:
   CommandArg( const InitializeCommandArgArgs & args );
 
-  CommandArgType get_type() const;
+  CommandParamType get_type() const;
   const CommandArgValue & get_value() const;
 
   std::string to_string() const;
 
 private:
-  CommandArgType _type;
+  CommandParamType _type;
   CommandArgValue _value;
 };
 
@@ -70,6 +78,6 @@ private:
 struct Command {
   std::string token;
   MaybeCommandType type = std::nullopt;
-  std::vector<CommandArgType> arg_types = {};
+  std::vector<CommandParam> params = {};
   Commands subcommands = {};
 };

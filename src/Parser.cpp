@@ -29,7 +29,7 @@ MaybeAction Parser::parse_global_action( std::string_view line ) const {
     return std::nullopt;
   }
 
-  if ( tokens.size() == depth && command->arg_types.size() == 0 ) {
+  if ( tokens.size() == depth && command->params.size() == 0 ) {
     return Action{
       .command_type = command->type.value(),
       .args = {},
@@ -38,7 +38,7 @@ MaybeAction Parser::parse_global_action( std::string_view line ) const {
   }
 
   MaybeCommandArgs maybe_args = parse_args(
-    command->arg_types, tokens.cbegin() + (int)depth, tokens.cend() );
+    command->params, tokens.cbegin() + (int)depth, tokens.cend() );
 
   if ( !maybe_args.has_value() ) {
     return std::nullopt;
@@ -69,7 +69,7 @@ MaybeAction Parser::parse_mode_action( std::string_view line,
     return std::nullopt;
   }
 
-  if ( tokens.size() == depth && command->arg_types.size() == 0 ) {
+  if ( tokens.size() == depth && command->params.size() == 0 ) {
     return Action{
       .command_type = command->type.value(),
       .args = {},
@@ -77,7 +77,7 @@ MaybeAction Parser::parse_mode_action( std::string_view line,
   }
 
   MaybeCommandArgs maybe_args = parse_args(
-    command->arg_types, tokens.cbegin() + (int)depth, tokens.cend() );
+    command->params, tokens.cbegin() + (int)depth, tokens.cend() );
 
   if ( !maybe_args.has_value() ) {
     return std::nullopt;
@@ -173,19 +173,19 @@ Parser::find_matching_command( const Tokens & tokens,
 }
 
 MaybeCommandArg Parser::validate_arg( std::string_view token,
-                                      CommandArgType expected_type ) const {
+                                      CommandParamType expected_type ) const {
   switch ( expected_type ) {
-    case CommandArgType::Int: {
+    case CommandParamType::Int: {
       MaybeInt i = StringConverter::try_parse_int( token );
 
       if ( !i.has_value() ) {
         return std::nullopt;
       }
 
-      return CommandArg( { .type = CommandArgType::Int, .value = i.value() } );
+      return CommandArg( { .type = CommandParamType::Int, .value = i.value() } );
     }
 
-    case CommandArgType::SizeT: {
+    case CommandParamType::SizeT: {
       MaybeSizeT n = StringConverter::try_parse_size_t( token );
 
       if ( !n.has_value() ) {
@@ -193,15 +193,15 @@ MaybeCommandArg Parser::validate_arg( std::string_view token,
       }
 
       return CommandArg(
-        { .type = CommandArgType::SizeT, .value = n.value() } );
+        { .type = CommandParamType::SizeT, .value = n.value() } );
     }
 
-    case CommandArgType::String: {
+    case CommandParamType::String: {
       return CommandArg(
-        { .type = CommandArgType::String, .value = std::string( token ) } );
+        { .type = CommandParamType::String, .value = std::string( token ) } );
     }
 
-    case CommandArgType::NonNegativeDouble: {
+    case CommandParamType::NonNegativeDouble: {
       MaybeDouble md = StringConverter::try_parse_double( token );
 
       if ( !md.has_value() ) {
@@ -215,16 +215,16 @@ MaybeCommandArg Parser::validate_arg( std::string_view token,
       }
 
       return CommandArg(
-        { .type = CommandArgType::NonNegativeDouble, .value = d } );
+        { .type = CommandParamType::NonNegativeDouble, .value = d } );
     }
 
-    case CommandArgType::Bool: {
+    case CommandParamType::Bool: {
       if ( token == "false" || token == "f" || token == "0" ) {
-        return CommandArg( { .type = CommandArgType::Bool, .value = false } );
+        return CommandArg( { .type = CommandParamType::Bool, .value = false } );
       }
 
       if ( token == "true" || token == "t" || token == "1" ) {
-        return CommandArg( { .type = CommandArgType::Bool, .value = true } );
+        return CommandArg( { .type = CommandParamType::Bool, .value = true } );
       }
 
       return std::nullopt;
@@ -232,10 +232,10 @@ MaybeCommandArg Parser::validate_arg( std::string_view token,
   }
 }
 
-MaybeCommandArgs Parser::parse_args( const CommandArgTypes & arg_types,
+MaybeCommandArgs Parser::parse_args( const CommandParams & params,
                                      Tokens::const_iterator begin,
                                      Tokens::const_iterator end ) const {
-  std::size_t expected_n_args = arg_types.size();
+  std::size_t expected_n_args = params.size();
   int n_args = end - begin;
 
   if ( expected_n_args != static_cast<std::size_t>( n_args ) ) {
@@ -251,7 +251,7 @@ MaybeCommandArgs Parser::parse_args( const CommandArgTypes & arg_types,
   CommandArgs args;
 
   for ( it = begin; it != end; it++ ) {
-    MaybeCommandArg maybe_arg = validate_arg( *it, arg_types[i] );
+    MaybeCommandArg maybe_arg = validate_arg( *it, params[i].type );
 
     if ( !maybe_arg.has_value() ) {
       IO::print_error( "Invalid argument ", i );

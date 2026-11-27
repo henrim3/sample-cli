@@ -2,17 +2,17 @@
 #include <initializer_list>
 #include <stdexcept>
 
-std::string_view command_arg_type_to_string( CommandArgType command_arg_type ) {
+std::string command_param_type_to_string( CommandParamType command_arg_type ) {
   switch ( command_arg_type ) {
-    case CommandArgType::String:
+    case CommandParamType::String:
       return "string";
-    case CommandArgType::SizeT:
+    case CommandParamType::SizeT:
       return "size_t";
-    case CommandArgType::Int:
+    case CommandParamType::Int:
       return "int";
-    case CommandArgType::NonNegativeDouble:
+    case CommandParamType::NonNegativeDouble:
       return "non-negative double";
-    case CommandArgType::Bool:
+    case CommandParamType::Bool:
       return "bool";
   }
 }
@@ -20,7 +20,7 @@ std::string_view command_arg_type_to_string( CommandArgType command_arg_type ) {
 CommandArg::CommandArg( const InitializeCommandArgArgs & args )
     : _type( args.type ), _value( args.value ) {}
 
-CommandArgType CommandArg::get_type() const {
+CommandParamType CommandArg::get_type() const {
   return _type;
 }
 
@@ -46,8 +46,7 @@ std::string CommandArg::to_string() const {
     },
     _value );
 
-  return "CommandArg:\n  type: " +
-         std::string( command_arg_type_to_string( _type ) ) +
+  return "CommandArg:\n  type: " + command_param_type_to_string( _type ) +
          "\n  value: " + value_str;
 }
 

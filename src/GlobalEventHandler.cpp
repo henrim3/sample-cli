@@ -93,17 +93,41 @@ void GlobalEventHandler::output_all_commands( const Commands & commands,
   const std::map<std::string, Command> & repr = commands.get_commands();
 
   for ( const auto & [token, command] : repr ) {
-    IO::print_indent( indent );
-    IO::print( token );
+    if ( command.subcommands.is_empty() && command.params.size() != 0 ) {
+      std::string line_1( token.size(), ' ' ); //       param name param na
+      std::string line_2 = token + " ";            // token <type>     <type>
 
-    if ( command.subcommands.is_empty() ) {
-      for ( CommandArgType arg_type : command.arg_types ) {
-        IO::print( " <", command_arg_type_to_string( arg_type ), ">" );
+      for ( CommandParam param : command.params ) {
+        std::string param_name = param.name;
+        std::string param_type_str = command_param_type_to_string( param.type );
+
+        line_1 += " ";
+        line_1 += param_name;
+
+        line_2 += " <";
+        line_2 += param_type_str;
+        line_2 += ">";
+
+        if ( param_name.size() > param_type_str.size() + 2 ) {
+          // param name is longer
+          line_2 += std::string(
+            param_name.size() - ( param_type_str.size() + 2 ), ' ' );
+        } else {
+          // param type is longer
+          line_1 += std::string(
+            ( param_type_str.size() + 2 ) - param_name.size(), ' ' );
+        }
       }
+
+      IO::print_indent( indent );
+      IO::println( line_1 );
+      IO::print_indent( indent );
+      IO::println( line_2 );
 
       IO::print_newline();
     } else {
-      IO::print_newline();
+      IO::print_indent( indent );
+      IO::println( token );
       output_all_commands( command.subcommands, indent + 2 );
     }
   }
