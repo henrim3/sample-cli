@@ -112,6 +112,11 @@ std::string App::make_prompt() const {
       }
       break;
     }
+
+    case AppMode::Sequence: {
+      prompt += "[sequence 1]";
+      break;
+    }
   }
 
   return prompt + " > ";

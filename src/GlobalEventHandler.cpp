@@ -1,4 +1,5 @@
 #include "GlobalEventHandler.h"
+#include "AppServices.h"
 #include "Command.h"
 #include "IO.h"
 
@@ -10,6 +11,7 @@ ModeResponse GlobalEventHandler::handle_action( const Action & action,
                                                 AppContext & context ) const {
   SampleManager & sample_manager = context.services.sample_manager;
   VoiceManager & voice_manager = context.services.voice_manager;
+  PlaybackEngine & playback_engine = context.services.playback_engine;
   HistoryManager & history_manager = context.state.history_manager;
 
 #pragma GCC diagnostic push
@@ -72,6 +74,8 @@ ModeResponse GlobalEventHandler::handle_action( const Action & action,
 
     case CommandType::StopAll:
       voice_manager.stop_all();
+      playback_engine.stop();
+        return ModeResponse{};
 
     default:
       return ModeResponse{};

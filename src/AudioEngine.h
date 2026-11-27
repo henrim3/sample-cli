@@ -1,12 +1,12 @@
 #pragma once
 
-class VoiceManager;
+class PlaybackEngine;
 
 #include <juce_audio_devices/juce_audio_devices.h>
 
 class AudioEngine : public juce::AudioIODeviceCallback {
 public:
-  AudioEngine( VoiceManager & voice_manager );
+  AudioEngine( PlaybackEngine & sequence_manager );
 
   void audioDeviceIOCallbackWithContext(
     const float * const * input_channel_data, int num_input_channels,
@@ -19,7 +19,7 @@ public:
   void audioDeviceStopped() override;
 
 private:
-  VoiceManager & _voice_manager;
+  PlaybackEngine & _playback_engine;
   double _sample_rate = 0.0;
   int _block_size = 0;
 };

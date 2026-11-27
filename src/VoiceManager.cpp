@@ -36,6 +36,17 @@ void VoiceManager::create_voice_for_pad( const Pad & pad ) {
                    pad.get_id(), " sample ", sample->get_id() );
 }
 
+void VoiceManager::create_voice_for_note( std::size_t note_id,
+                                           const Sample & sample ) {
+  Voice * voice = get_available_voice();
+  if ( voice == nullptr ) {
+    IO::print_error( "Ran out of voices!" );
+    return;
+  }
+
+  voice->start_for_event( note_id, sample );
+}
+
 void VoiceManager::stop_voices_for_sample( std::size_t sample_id ) {
   for ( Voice & voice : _voices ) {
     if ( voice.get_sample_id() == sample_id && voice.is_active() ) {
@@ -52,6 +63,14 @@ void VoiceManager::stop_voices_for_pad( std::size_t pad_id ) {
   }
 }
 
+void VoiceManager::stop_voices_for_note( std::size_t note_id ) {
+  for ( Voice & voice : _voices ) {
+    if ( voice.is_active() && voice.get_note_id() == note_id ) {
+      voice.stop();
+    }
+  }
+}
+
 void VoiceManager::stop_all() {
   for ( Voice & voice : _voices ) {
     if ( voice.is_active() ) {
@@ -60,12 +79,11 @@ void VoiceManager::stop_all() {
   }
 }
 
-void VoiceManager::render( juce::AudioBuffer<float> & output ) {
-  output.clear();
-
+void VoiceManager::render( juce::AudioBuffer<float> & output, int start_sample,
+                           int num_samples ) {
   for ( Voice & voice : _voices ) {
     if ( voice.is_active() ) {
-      voice.render( output, 0, output.getNumSamples() );
+      voice.render( output, start_sample, num_samples );
     }
   }
 }

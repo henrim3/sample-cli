@@ -1,6 +1,7 @@
 #include "StringConverter.h"
 #include <cctype>
 #include <optional>
+#include <stdexcept>
 #include <string>
 
 MaybeInt StringConverter::try_parse_int( std::string_view s ) {
@@ -27,3 +28,12 @@ MaybeSizeT StringConverter::try_parse_size_t( std::string_view s ) {
   return static_cast<std::size_t>( i );
 }
 
+MaybeDouble StringConverter::try_parse_double( std::string_view s ) {
+  try {
+    return std::stod( std::string( s ) );
+  } catch ( const std::invalid_argument ) {
+    return std::nullopt;
+  } catch ( const std::out_of_range ) {
+    return std::nullopt;
+  }
+}

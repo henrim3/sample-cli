@@ -18,7 +18,7 @@ public:
 
 private:
   std::size_t _id;
-  const Sample * _sample;
+  const Sample * _sample = nullptr;
   float gain = 1.0f;
   bool loop = false;
 };

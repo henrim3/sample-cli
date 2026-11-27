@@ -8,4 +8,5 @@ class StringConverter {
 public:
   static MaybeInt try_parse_int( std::string_view s );
   static MaybeSizeT try_parse_size_t( std::string_view s );
+  static MaybeDouble try_parse_double( std::string_view s );
 };

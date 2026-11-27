@@ -26,6 +26,13 @@ enum class CommandType {
   SelectPad,
   StopPad,
 
+  // Sequence
+  NewNote,
+  PlaySequence,
+  SelectSequence,
+  SetSequenceLength,
+  StopSequence,
+
   StopAll,
 };
 
