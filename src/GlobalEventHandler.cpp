@@ -24,7 +24,7 @@ ModeResponse GlobalEventHandler::handle_action( const Action & action,
     case CommandType::ListCommands: {
       Commands global_commands = _commandRegistry.get_global_commands();
       Commands mode_commands =
-        _commandRegistry.get_mode_commands_for( context.state.mode );
+        _commandRegistry.get_commands_for_mode( context.state.mode );
 
       IO::println( "Global:" );
       output_all_commands( global_commands, 2 );
@@ -90,12 +90,12 @@ void GlobalEventHandler::output_all_commands( const Commands & commands,
     return;
   }
 
-  const std::map<std::string, Command> & repr = commands.get_commands();
+  const std::vector<Command> & repr = commands.get_commands();
 
-  for ( const auto & [token, command] : repr ) {
+  for ( const Command & command : repr ) {
     if ( command.subcommands.is_empty() && command.params.size() != 0 ) {
-      std::string line_1( token.size(), ' ' ); //       param name param na
-      std::string line_2 = token + " ";            // token <type>     <type>
+      std::string line_1( command.token.size(), ' ' ); //       param name param name
+      std::string line_2 = command.token; // token <type>     <type>
 
       for ( CommandParam param : command.params ) {
         std::string param_name = param.name;
@@ -127,7 +127,7 @@ void GlobalEventHandler::output_all_commands( const Commands & commands,
       IO::print_newline();
     } else {
       IO::print_indent( indent );
-      IO::println( token );
+      IO::println( command.token );
       output_all_commands( command.subcommands, indent + 2 );
     }
   }

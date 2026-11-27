@@ -23,6 +23,6 @@ const Commands & CommandRegistry::get_global_commands() const {
   return _global_commands;
 }
 
-const Commands & CommandRegistry::get_mode_commands_for( AppMode mode ) const {
+const Commands & CommandRegistry::get_commands_for_mode( AppMode mode ) const {
   return _mode_commands.at( mode );
 }

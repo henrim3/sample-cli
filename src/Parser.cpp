@@ -63,7 +63,7 @@ MaybeAction Parser::parse_mode_action( std::string_view line,
   const Tokens & tokens = maybe_tokens.value();
 
   auto [command, depth] = find_matching_command(
-    tokens, _command_registry.get_mode_commands_for( mode ) );
+    tokens, _command_registry.get_commands_for_mode( mode ) );
 
   if ( command == nullptr || !command->type.has_value() ) {
     return std::nullopt;
