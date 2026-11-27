@@ -2,7 +2,6 @@
 
 #include "CommandType.h"
 #include <initializer_list>
-#include <map>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -20,8 +19,7 @@ enum class CommandParamType {
   Bool,
 };
 
-std::string
-command_param_type_to_string( CommandParamType command_arg_type );
+std::string command_param_type_to_string( CommandParamType command_arg_type );
 
 using CommandParamTypes = std::vector<CommandParamType>;
 
@@ -59,6 +57,7 @@ struct Command;
 
 class Commands {
 public:
+  Commands();
   Commands( const std::vector<Command> & commands );
   Commands( std::initializer_list<Command> commands );
 
@@ -69,10 +68,12 @@ public:
 
   bool is_empty() const;
 
-  const std::map<std::string, Command> & get_commands() const;
+  const std::vector<Command> & get_commands() const;
 
 private:
-  std::map<std::string, Command> _commands = {};
+  std::vector<Command> _commands;
+
+  std::size_t expected_index( std::string_view token ) const;
 };
 
 struct Command {
@@ -81,3 +82,5 @@ struct Command {
   std::vector<CommandParam> params = {};
   Commands subcommands = {};
 };
+
+inline Commands::Commands() = default;

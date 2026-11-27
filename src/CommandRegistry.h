@@ -14,7 +14,7 @@ public:
   void register_commands_for_mode( AppMode mode,
                                    const std::vector<Command> & commands );
   const Commands & get_global_commands() const;
-  const Commands & get_mode_commands_for( AppMode mode ) const;
+  const Commands & get_commands_for_mode( AppMode mode ) const;
 
 private:
   Commands _global_commands = {};

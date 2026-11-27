@@ -1,6 +1,5 @@
 #include "Command.h"
 #include <initializer_list>
-#include <stdexcept>
 
 std::string command_param_type_to_string( CommandParamType command_arg_type ) {
   switch ( command_arg_type ) {
@@ -52,31 +51,60 @@ std::string CommandArg::to_string() const {
 
 Commands::Commands( const std::vector<Command> & commands ) {
   for ( const Command & command : commands ) {
-    _commands.insert_or_assign( command.token, command );
+    add( command );
   }
 }
 
 Commands::Commands( std::initializer_list<Command> commands ) {
   for ( const Command & command : commands ) {
-    _commands.insert_or_assign( command.token, command );
+    add( command );
   }
 }
 
 const Command * Commands::get( std::string_view token ) const {
-  try {
-    return &_commands.at( std::string( token ) );
-  } catch ( std::out_of_range & ) {
+  std::size_t index = expected_index( token );
+
+  // reached end or not a substring
+  if ( index == _commands.size() ) {
     return nullptr;
   }
+
+  const Command & found_command = _commands[index];
+
+  // not a substring match
+  if ( token != found_command.token.substr( 0, token.size() ) ) {
+    return nullptr;
+  }
+
+  // exact match
+  if ( token == found_command.token ) {
+    return &found_command;
+  }
+
+  // from here on it's a substring
+
+  // last command, no ambiguity
+  if ( index == _commands.size() - 1 ) {
+    return &found_command;
+  }
+
+  // check if ambiguous with next command
+  if ( token == _commands[index + 1].token.substr( 0, token.size() ) ) {
+    return nullptr;
+  }
+
+  return &_commands[index];
 }
 
 void Commands::add( const Command & command ) {
-  _commands.insert_or_assign( command.token, command );
+  std::size_t insert_at = expected_index( command.token );
+  _commands.insert( _commands.begin() + static_cast<int>( insert_at ),
+                    command );
 }
 
 void Commands::add( const Commands & commands ) {
-  for ( const auto & command_entry : commands._commands ) {
-    _commands[command_entry.second.token] = command_entry.second;
+  for ( const Command & command : commands._commands ) {
+    add( command );
   }
 }
 
@@ -84,6 +112,16 @@ bool Commands::is_empty() const {
   return _commands.size() == 0;
 }
 
-const std::map<std::string, Command> & Commands::get_commands() const {
+const std::vector<Command> & Commands::get_commands() const {
   return _commands;
+}
+
+std::size_t Commands::expected_index( std::string_view token ) const {
+  // TODO: binary search
+  for ( std::size_t i = 0; i < _commands.size(); i++ ) {
+    if ( token <= _commands[i].token ) {
+      return i;
+    }
+  }
+  return _commands.size();
 }
