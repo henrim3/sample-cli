@@ -30,9 +30,9 @@ private:
                          const Commands & commands ) const;
 
   MaybeCommandArg validate_arg( std::string_view token,
-                                CommandArgType expected_type ) const;
+                                CommandParamType expected_type ) const;
 
-  MaybeCommandArgs parse_args( const std::vector<CommandArgType> & arg_types,
+  MaybeCommandArgs parse_args( const CommandParams & params,
                                Tokens::const_iterator begin,
                                Tokens::const_iterator end ) const;
 };

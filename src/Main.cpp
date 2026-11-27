@@ -47,9 +47,12 @@ int main() {
               {
                 .token = "sample",
                 .type = CommandType::NewSample,
-                .arg_types =
+                .params =
                   {
-                    CommandArgType::String,
+                    {
+                      .name = "filename",
+                      .type = CommandParamType::String,
+                    },
                   },
               },
             },
@@ -61,17 +64,23 @@ int main() {
               {
                 .token = "pad",
                 .type = CommandType::SelectPad,
-                .arg_types =
+                .params =
                   {
-                    CommandArgType::SizeT,
+                    {
+                      .name = "pad id",
+                      .type = CommandParamType::SizeT,
+                    },
                   },
               },
               {
                 .token = "sample",
                 .type = CommandType::SelectSample,
-                .arg_types =
+                .params =
                   {
-                    CommandArgType::SizeT,
+                    {
+                      .name = "sample id",
+                      .type = CommandParamType::SizeT,
+                    },
                   },
               },
               {
@@ -92,9 +101,12 @@ int main() {
               {
                 .token = "sample",
                 .type = CommandType::AssignSample,
-                .arg_types =
+                .params =
                   {
-                    CommandArgType::SizeT,
+                    {
+                      .name = "sample id",
+                      .type = CommandParamType::SizeT,
+                    },
                   },
               },
             },
@@ -133,12 +145,24 @@ int main() {
                 .token = "note",
                 .type = CommandType::NewNote,
                 // pad id, start, duration
-                .arg_types =
+                .params =
                   {
-                    CommandArgType::SizeT,
-                    CommandArgType::NonNegativeDouble,
-                    CommandArgType::NonNegativeDouble,
-                    CommandArgType::Bool,
+                    {
+                      .name = "pad id",
+                      .type = CommandParamType::SizeT,
+                    },
+                    {
+                      .name = "start",
+                      .type = CommandParamType::NonNegativeDouble,
+                    },
+                    {
+                      .name = "duration",
+                      .type = CommandParamType::NonNegativeDouble,
+                    },
+                    {
+                      .name = "one shot",
+                      .type = CommandParamType::Bool,
+                    },
                   },
               },
             },
