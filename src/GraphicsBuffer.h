@@ -5,7 +5,9 @@
 template <typename T>
 class GraphicsBuffer {
 public:
-  GraphicsBuffer( std::size_t width, std::size_t height, const T & default_val )
+  GraphicsBuffer() {}
+
+  GraphicsBuffer( std::size_t width, std::size_t height, T default_val )
       : _default_val( default_val ), _width( width ), _height( height ) {
     _buffer = std::vector<std::vector<T>>(
       height, std::vector<T>( width, default_val ) );
@@ -18,7 +20,7 @@ public:
     return _height;
   }
 
-  const T & get( std::size_t x, std::size_t y ) const {
+  T get( std::size_t x, std::size_t y ) const {
     check_bounds( x, y );
     return _buffer[y][x];
   }
@@ -47,8 +49,14 @@ private:
   std::vector<std::vector<T>> _buffer;
 
   void check_bounds( std::size_t x, std::size_t y ) const {
-    if ( x >= _width || y >= _height ) {
-      IO::print_error( "Attempting to access value outside of buffer" );
+    if ( x >= _width ) {
+      IO::print_error( "Attempting to access value outside of buffer, x = ", x,
+                       " but width = ", _width );
+    }
+
+    if ( y >= _height ) {
+      IO::print_error( "Attempting to access value outside of buffer, y = ", y,
+                       " but height = ", _height );
     }
   }
 };

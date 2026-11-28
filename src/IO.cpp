@@ -80,6 +80,10 @@ void IO::flush_output() {
   std::cout << std::flush;
 }
 
+void IO::clear_screen() {
+  print( "\033[2J\033[1;1H" );
+}
+
 Key IO::get_escape_or_arrow_key() {
   pollfd pfd{ STDIN_FILENO, POLLIN, 0 };
 

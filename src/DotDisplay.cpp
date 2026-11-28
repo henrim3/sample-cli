@@ -57,50 +57,78 @@ void DotDisplay::output() {
   // i means intermediate
   // d means delta
 
-  PixelBuffer i_buffer( _output_buffer.get_width() * 2,
-                        _output_buffer.get_height() * 3, false );
+  _intermediate_buffer = PixelBuffer( _output_buffer.get_width() * 2,
+                                      _output_buffer.get_height() * 3, false );
 
   double d_y = static_cast<double>( _graphics_buffer.get_height() ) /
                ( _output_buffer.get_height() * 3 );
   double d_x = static_cast<double>( _graphics_buffer.get_width() ) /
                ( _output_buffer.get_width() * 2 );
 
-  std::size_t i_x = 0;
-  std::size_t i_y = 0;
 
-  for ( double y = 0; y < _graphics_buffer.get_height(); y += d_y ) {
-    for ( double x = 0; x < _graphics_buffer.get_width(); x += d_x ) {
-      i_buffer.set( i_x, i_y, summarize_graphics_chunk( x, y, d_x, d_y ) );
-      i_x++;
+  // g for graphics
+  for ( std::size_t i_y = 0; i_y < _intermediate_buffer.get_height(); i_y++ ) {
+    for ( std::size_t i_x = 0; i_x < _intermediate_buffer.get_width(); i_x++ ) {
+      _intermediate_buffer.set(
+        i_x, i_y, summarize_graphics_chunk( i_x * d_x, i_y * d_y, d_x, d_y ) );
     }
-    i_y++;
   }
 
   // convert intermediate buffer to braille characters in output buffer
+  // o for output
+  for ( std::size_t o_y = 0; o_y < _output_buffer.get_height(); o_y++ ) {
+    for ( std::size_t o_x = 0; o_x < _output_buffer.get_width(); o_x++ ) {
+      _output_buffer.set( o_x, o_y, intermediate_chunk_to_braille( o_x, o_y ) );
+    }
+  }
+
+  // time to output
+  IO::clear_screen();
+
+  for ( std::size_t o_y = 0; o_y < _output_buffer.get_height(); o_y++ ) {
+    for ( std::size_t o_x = 0; o_x < _output_buffer.get_width(); o_x++ ) {
+      IO::print_no_flush( _output_buffer.get( o_x, o_y ) );
+    }
+    IO::print_no_flush( "\n" );
+  }
+
+  IO::flush_output();
 }
 
-bool DotDisplay::summarize_graphics_chunk( std::size_t x, std::size_t y,
-                                           double d_x, double d_y ) {
+bool DotDisplay::summarize_graphics_chunk( double x, double y, double d_x,
+                                           double d_y ) {
   // I made this math up myself
 
   double numerator = 0;
   double denominator = 0;
 
+  // TODO: factor in the before remainder since it can start off the grid
+  // for now just skip that part
+
+  std::size_t x_ceil = std::ceil( x );
+  std::size_t y_ceil = std::ceil( y );
+
+  // TODO: remove this temporary fix
+  if ( x_ceil >= _graphics_buffer.get_width() || y_ceil >= _graphics_buffer.get_height() ) {
+    return false;
+  }
+
   // do the integer part first
-  for ( std::size_t yy = y; yy < y + d_y; yy++ ) {
-    for ( std::size_t xx = x; xx < x + d_x; xx++ ) {
-      if ( _graphics_buffer.get( xx, yy ) ) {
+  for ( std::size_t g_y = y_ceil; g_y < y + d_y; g_y++ ) {
+    for ( std::size_t g_x = x_ceil; g_x < x + d_x; g_x++ ) {
+      if ( _graphics_buffer.get( g_x, g_y ) ) {
         numerator++;
       }
       denominator++;
     }
   }
 
-  bool x_is_int = is_int( d_x );
-  bool y_is_int = is_int( d_y );
+  // WARNING: this could be breaking things
+  bool x_end_is_int = is_int( x + d_x );
+  bool y_end_is_int = is_int( y + d_y );
 
   // if no remainders we're done
-  if ( x_is_int && y_is_int ) {
+  if ( x_end_is_int && y_end_is_int ) {
     return ( numerator / denominator ) > 0.5;
   }
 
@@ -113,7 +141,7 @@ bool DotDisplay::summarize_graphics_chunk( std::size_t x, std::size_t y,
   std::size_t q_x = std::trunc( d_x );
   std::size_t q_y = std::trunc( d_y );
 
-  if ( !x_is_int ) {
+  if ( !x_end_is_int ) {
     for ( std::size_t yy = y; yy < q_y; yy++ ) {
       if ( _graphics_buffer.get( q_x, yy ) ) {
         numerator += r_x;
@@ -122,7 +150,7 @@ bool DotDisplay::summarize_graphics_chunk( std::size_t x, std::size_t y,
     }
   }
 
-  if ( !y_is_int ) {
+  if ( !y_end_is_int ) {
     for ( std::size_t xx = x; xx < q_x; xx++ ) {
       if ( _graphics_buffer.get( q_y, xx ) ) {
         numerator += r_y;
@@ -131,11 +159,27 @@ bool DotDisplay::summarize_graphics_chunk( std::size_t x, std::size_t y,
     }
 
     // if both do special thing for corner pixel
-    if ( !x_is_int && _graphics_buffer.get( q_x, q_y ) ) {
+    if ( !x_end_is_int && _graphics_buffer.get( q_x, q_y ) ) {
       numerator += r_x * r_y;
       denominator += r_x * r_y;
     }
   }
 
   return ( numerator / denominator ) > 0.5;
+}
+
+std::string DotDisplay::intermediate_chunk_to_braille( std::size_t x,
+                                                       std::size_t y ) {
+  // watch this
+  std::size_t thing = 0;
+
+  // loop through each braille dot in chunk
+  for ( std::size_t i_y = y * 3; i_y < y * 3 + 3; i_y++ ) {
+    for ( std::size_t i_x = x * 2; i_x < x * 2 + 2; i_x++ ) {
+      thing <<= 1;
+      thing += _intermediate_buffer.get( i_x, i_y );
+    }
+  }
+
+  return braille.at( thing );
 }

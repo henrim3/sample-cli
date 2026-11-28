@@ -56,6 +56,9 @@ public:
 
   static void flush_output();
 
+  // clears screen and moves cursor to top left
+  static void clear_screen();
+
 private:
   static termios _oldt;
 

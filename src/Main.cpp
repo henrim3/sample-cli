@@ -29,8 +29,9 @@ int main() {
   DotDisplay d;
   d.set_output_buffer_dimensions( term_dimensions.value().width,
                                   term_dimensions.value().height );
-
   d.set_graphics_buffer_dimensions( 2880, 1800 );
+
+  d.draw_square( 10, 10, 200, 200 );
 
   d.output();
 

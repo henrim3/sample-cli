@@ -24,8 +24,14 @@ public:
 private:
   UnicodeBuffer _output_buffer;
 
+  // each pixel is a braille dot
+  PixelBuffer _intermediate_buffer;
+
   // internal graphics representation, full resolution
   PixelBuffer _graphics_buffer;
 
-  bool summarize_graphics_chunk( std::size_t x, std::size_t y, double d_x, double d_y );
+  bool summarize_graphics_chunk( double x, double y, double d_x, double d_y );
+
+  // coords are intermediate buffer coords
+  std::string intermediate_chunk_to_braille( std::size_t x, std::size_t y );
 };
