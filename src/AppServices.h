@@ -2,6 +2,7 @@
 
 #include "AudioEngine.h"
 #include "DeviceManager.h"
+#include "DotDisplay.h"
 #include "FormatManager.h"
 #include "PadManager.h"
 #include "PlaybackEngine.h"
@@ -16,4 +17,5 @@ struct AppServices {
   DeviceManager & device_manager;
   FormatManager & format_manager;
   PlaybackEngine & playback_engine;
+  DotDisplay & dot_display;
 };

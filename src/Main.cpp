@@ -2,11 +2,13 @@
 #include "Command.h"
 #include "CommandLoop.h"
 #include "CommandRegistry.h"
+#include "DotDisplay.h"
 #include "EventHandlerRegistry.h"
 #include "GlobalEventHandler.h"
 #include "HistoryManager.h"
 #include "IO.h"
 #include "LineEditor.h"
+#include "MediaQuery.h"
 #include "PadModeEventHandler.h"
 #include "Parser.h"
 #include "PlaybackEngine.h"
@@ -14,6 +16,28 @@
 #include "SampleModeEventHandler.h"
 #include "SequenceModeEventHandler.h"
 
+int main() {
+  IO::init();
+
+  MaybeScreenDimensions term_dimensions = MediaQuery::get_terminal_dimensions();
+
+  if ( !term_dimensions.has_value() ) {
+    IO::print_error( "Couldn't get terminal dimensions" );
+    return 1;
+  }
+
+  DotDisplay d;
+  d.set_output_buffer_dimensions( term_dimensions.value().width,
+                                  term_dimensions.value().height );
+
+  d.set_graphics_buffer_dimensions( 2880, 1800 );
+
+  d.output();
+
+  return 0;
+}
+
+/*
 int main() {
   IO::init();
 
@@ -197,6 +221,16 @@ int main() {
         .type = CommandType::Deselect,
       },
       {
+        .token = "debug",
+        .subcommands =
+          {
+            {
+              .token = "dimensions",
+              .type = CommandType::DebugTerminalDimensions,
+            },
+          },
+      },
+      {
         .token = "exit",
         .type = CommandType::Quit,
       },
@@ -244,6 +278,7 @@ int main() {
   DeviceManager device_manager( audio_engine );
   FormatManager format_manager;
   SampleManager sample_manager( format_manager );
+  DotDisplay dot_display;
 
   AppServices services{ .voice_manager = voice_manager,
                         .sample_manager = sample_manager,
@@ -251,7 +286,8 @@ int main() {
                         .audio_engine = audio_engine,
                         .device_manager = device_manager,
                         .format_manager = format_manager,
-                        .playback_engine = playback_engine };
+                        .playback_engine = playback_engine,
+                        .dot_display = dot_display };
 
   LineEditor line_editor;
   HistoryManager history_manager;
@@ -276,11 +312,12 @@ int main() {
   EventHandlerRegistry event_handler_registry;
 
   // register event handlers
-  event_handler_registry.register_global_event_handler( global_event_handler );
-  event_handler_registry.register_event_handler_for(
+  event_handler_registry.register_global_event_handler( global_event_handler
+  ); event_handler_registry.register_event_handler_for(
     AppMode::Project, project_mode_event_handler );
   event_handler_registry.register_event_handler_for( AppMode::Pad,
-                                                     pad_mode_event_handler );
+                                                     pad_mode_event_handler
+                                                     );
   event_handler_registry.register_event_handler_for(
     AppMode::Sample, sample_mode_event_handler );
   event_handler_registry.register_event_handler_for(
@@ -295,3 +332,4 @@ int main() {
 
   return 0;
 }
+*/

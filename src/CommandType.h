@@ -5,6 +5,9 @@ enum class CommandType {
   Deselect,
 
   ListCommands,
+  
+  // Debug
+  DebugTerminalDimensions,
 
   // History
   ShowHistory,

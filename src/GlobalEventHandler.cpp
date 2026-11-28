@@ -2,6 +2,7 @@
 #include "AppServices.h"
 #include "Command.h"
 #include "IO.h"
+#include "MediaQuery.h"
 #include <cstddef>
 
 GlobalEventHandler::GlobalEventHandler(
@@ -35,9 +36,28 @@ ModeResponse GlobalEventHandler::handle_action( const Action & action,
       return ModeResponse{};
     }
 
+    case CommandType::DebugTerminalDimensions: {
+      MaybeScreenDimensions dimensions = MediaQuery::get_terminal_dimensions();
+
+      if ( !dimensions.has_value() ) {
+        IO::print_error( "Couldn't get terminal dimensions" );
+        return ModeResponse{};
+      }
+
+      IO::println( "Terminal Dimensions:" );
+      IO::print_indent( 2 );
+      IO::println( "Width: ", dimensions.value().width );
+      IO::print_indent( 2 );
+      IO::println( "Height: ", dimensions.value().height );
+
+      return ModeResponse{};
+    }
+
     case CommandType::Deselect: {
       switch ( context.state.mode ) {
         case AppMode::Main:
+          return ModeResponse{};
+        case AppMode::Project:
           return ModeResponse{ .switch_to_mode = AppMode::Main };
         default:
           return ModeResponse{ .switch_to_mode = AppMode::Project };
@@ -94,7 +114,8 @@ void GlobalEventHandler::output_all_commands( const Commands & commands,
 
   for ( const Command & command : repr ) {
     if ( command.subcommands.is_empty() && command.params.size() != 0 ) {
-      std::string line_1( command.token.size(), ' ' ); //       param name param name
+      std::string line_1( command.token.size(),
+                          ' ' );          //       param name param name
       std::string line_2 = command.token; // token <type>     <type>
 
       for ( CommandParam param : command.params ) {
