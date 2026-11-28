@@ -16,7 +16,7 @@ public:
 
   void clear();
 
-  void draw_square( std::size_t x1, std::size_t y1, std::size_t x2,
+  void draw_rect( std::size_t x1, std::size_t y1, std::size_t x2,
                     std::size_t y2 );
 
   void output();

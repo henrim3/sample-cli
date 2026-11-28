@@ -31,7 +31,8 @@ int main() {
                                   term_dimensions.value().height );
   d.set_graphics_buffer_dimensions( 2880, 1800 );
 
-  d.draw_square( 10, 10, 200, 200 );
+  d.draw_rect( 10, 10, 200, 200 );
+  d.draw_rect( 300, 300, 500, 500 );
 
   d.output();
 

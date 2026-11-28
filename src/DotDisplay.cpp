@@ -38,7 +38,7 @@ void DotDisplay::clear() {
   _graphics_buffer.clear();
 }
 
-void DotDisplay::draw_square( std::size_t x1, std::size_t y1, std::size_t x2,
+void DotDisplay::draw_rect( std::size_t x1, std::size_t y1, std::size_t x2,
                               std::size_t y2 ) {
   if ( x1 >= x2 || y1 >= y2 ) {
     IO::print_error( "Invalid square" );
@@ -108,12 +108,7 @@ bool DotDisplay::summarize_graphics_chunk( double x, double y, double d_x,
   std::size_t x_ceil = std::ceil( x );
   std::size_t y_ceil = std::ceil( y );
 
-  // TODO: remove this temporary fix
-  if ( x_ceil >= _graphics_buffer.get_width() || y_ceil >= _graphics_buffer.get_height() ) {
-    return false;
-  }
-
-  // do the integer part first
+  // do the integer part
   for ( std::size_t g_y = y_ceil; g_y < y + d_y; g_y++ ) {
     for ( std::size_t g_x = x_ceil; g_x < x + d_x; g_x++ ) {
       if ( _graphics_buffer.get( g_x, g_y ) ) {
